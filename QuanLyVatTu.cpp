@@ -201,33 +201,37 @@ void chuyenCaySangMang(TREE TREE_VT, VatTu *vt[], int &nVT) {
 	}
 }
 
-void HoanViHaiVT(VatTu *a, VatTu *b) {
-	VatTu *temp = new VatTu;
+void hoanViHaiVT(nodeVatTu *a, nodeVatTu *b) {
+	nodeVatTu *temp = new nodeVatTu;
 	
-	temp->maVT = a->maVT;
-	temp->tenVT = a->tenVT;
-	temp->dvt = a->dvt;
-	temp->slTon = a->slTon;
+	// thu lai chi gan ->info = ->info
+	temp->info.maVT = a->info.maVT;
+	temp->info.tenVT = a->info.tenVT;
+	temp->info.dvt = a->info.dvt;
+	temp->info.slTon = a->info.slTon;
 	
-	a->maVT = b->maVT;
-	a->tenVT = b->tenVT;
-	a->dvt = b->dvt;
-	a->slTon = b->slTon;
+	a->info.maVT = b->info.maVT;
+	a->info.tenVT = b->info.tenVT;
+	a->info.dvt = b->info.dvt;
+	a->info.slTon = b->info.slTon;
 	
-	b->maVT = temp->maVT;
-	b->tenVT = temp->tenVT;
-	b->dvt = temp->dvt;
-	b->slTon = temp->slTon;
+	b->info.maVT = temp->info.maVT;
+	b->info.tenVT = temp->info.tenVT;
+	b->info.dvt = temp->info.dvt;
+	b->info.slTon = temp->info.slTon;
 	
 	delete temp; 
 }
 
 // sap xep vat tu theo ten tang dan
 void sapXepVT(VatTu *vt[], int &nVT) {
+	VatTu *temp;
 	for(int i = 0; i < nVT - 1; i++) {
 		for(int j = i + 1; j < nVT; j++) {
 			if(vt[i]->tenVT.compare(vt[j]->tenVT) > 0) {
-				HoanViHaiVT(vt[i], vt[j]);
+				temp = vt[i];
+				vt[i] = vt[j];
+				vt[j] = temp;
 			}
 		}
 	}
@@ -235,10 +239,10 @@ void sapXepVT(VatTu *vt[], int &nVT) {
 
 bool kiemTraTrungMaVT(TREE TREE_VT, string maVT) {
 	if(TREE_VT != NULL) {
-		if(TREE_VT->info.maVT.compare(maVT) == 0)
+		if(maVT.compare(TREE_VT->info.maVT) == 0)
 			return true;
 		
-		else if(TREE_VT->info.maVT.compare(maVT) < 0)
+		else if(maVT.compare(TREE_VT->info.maVT) > 0)
 			return kiemTraTrungMaVT(TREE_VT->pRight, maVT);
 			
 		else
@@ -291,6 +295,63 @@ void xuatDanhSachVT(VatTu *vt[], int nVT){
 		cout << "So luong ton: " << vt[i]->slTon << endl;
 	}
 }
+
+void giaiPhongDSVatTu(VatTu *vt[], int nVT) {
+	for(int i = 0; i < nVT; i++)
+		delete vt[i];
+}
+
+void nodeTheMang(TREE TREE_VT, nodeVatTu *&x) {
+	if(TREE_VT->pLeft != NULL) {
+		nodeTheMang(TREE_VT->pLeft, x);
+	} else { //  tim duoc node trai cung cua cay con phai
+		hoanViHaiVT(TREE_VT, x);
+		x = TREE_VT;
+		TREE_VT = TREE_VT->pRight;
+	}
+}
+
+void xoaMotVatTu(TREE &TREE_VT, string maVT) {
+	if(TREE_VT != NULL) {
+		if(maVT.compare(TREE_VT->info.maVT) == 0) {
+			nodeVatTu *x = TREE_VT;
+			
+			// neu cay con trai cua node can xoa NULL
+			if(TREE_VT->pLeft == NULL)
+				TREE_VT = TREE_VT->pRight;
+			// neu cay con phai cua node can xoa NULL
+			else if(TREE_VT->pRight == NULL)
+				TREE_VT = TREE_VT->pLeft;
+			// neu ca 2 cay con cua not can xoa khong NULL thi can tim nut the mang
+			else if(TREE_VT->pLeft != NULL && TREE_VT->pRight != NULL) {
+				// tim node the mang: trai cung cua cay con phai
+				nodeTheMang(TREE_VT->pRight, x);
+			}
+			delete x;
+		} else if(maVT.compare(TREE_VT->info.maVT) > 0) {
+			xoaMotVatTu(TREE_VT->pRight, maVT);
+		} else if(maVT.compare(TREE_VT->info.maVT) < 0) {
+			xoaMotVatTu(TREE_VT->pLeft, maVT);
+		}
+	}
+}
+
+void xoaVatTu(DSVatTu &DSVT) {
+	string maVT;
+	cout << "Nhap ma Vat Tu: ";
+	cin.ignore();
+	getline(cin, maVT);
+	
+ 	if(!kiemTraTrungMaVT(DSVT.TREE_VT, maVT)) {
+		cout << "MA VAT TU KHONG TON TAI!" << endl;
+	} else {
+		xoaMotVatTu(DSVT.TREE_VT, maVT);
+		DSVT.sl--;
+		cout << "XOA THANH CONG!" << endl;
+	}
+	system("pause");
+}
+
 
 // ====================================================================================
 // ====================================== NHAN VIEN ===================================
@@ -511,6 +572,7 @@ void Menu() {
 	while(checkStop) {
 		system("cls");
 		cout << "1. Them vat tu " << endl;
+		cout << "2. Xoa vat tu" << endl;
 		cout << "4. Xuat danh sach vat tu" << endl;
 		cout << "5. Them nhan vien" << endl;
 		cout << "6. Hieu chinh nhan vien" << endl;
@@ -526,6 +588,10 @@ void Menu() {
 				nhapVatTu(DSVT);
 				break;
 			}
+			case 2: {
+				xoaVatTu(DSVT);
+				break;
+			}
 			case 4: {
 				VatTu *vt[100];
 				int nVT = 0;
@@ -533,6 +599,7 @@ void Menu() {
 				// sap xep tang dan theo ten
 				sapXepVT(vt, nVT);
 				xuatDanhSachVT(vt, nVT);
+				giaiPhongDSVatTu(vt, nVT);
 				getch();
 				break;
 			}
