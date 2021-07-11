@@ -204,25 +204,9 @@ void chuyenCaySangMang(TREE TREE_VT, VatTu *vt[], int &nVT) {
 void hoanViHaiVT(nodeVatTu *a, nodeVatTu *b) {
 	nodeVatTu *temp = new nodeVatTu;
 	
-//	temp->info = a->info;
-//	a->info = b->info;
-//	b->info = temp->info;
-	
-	//thu lai chi gan ->info = ->info
-	temp->info.maVT = a->info.maVT;
-	temp->info.tenVT = a->info.tenVT;
-	temp->info.dvt = a->info.dvt;
-	temp->info.slTon = a->info.slTon;
-	
-	a->info.maVT = b->info.maVT;
-	a->info.tenVT = b->info.tenVT;
-	a->info.dvt = b->info.dvt;
-	a->info.slTon = b->info.slTon;
-	
-	b->info.maVT = temp->info.maVT;
-	b->info.tenVT = temp->info.tenVT;
-	b->info.dvt = temp->info.dvt;
-	b->info.slTon = temp->info.slTon;
+	temp->info = a->info;
+	a->info = b->info;
+	b->info = temp->info;
 	
 	delete temp; 
 }
@@ -365,8 +349,9 @@ void hieuChinhMotVatTu(TREE &TREE_VT, string maVT) {
 			getline(cin, TREE_VT->info.tenVT);
 			cout << "Nhap don vi tinh vat tu hieu chinh: ";
 			getline(cin, TREE_VT->info.dvt);
-			cout << "Nhap so luong ton vat tu hieu chinh: ";
-			cin >> TREE_VT->info.slTon;
+			//so luong ton khong duoc phep hieu chinh
+//			cout << "Nhap so luong ton vat tu hieu chinh: ";
+//			cin >> TREE_VT->info.slTon;
 			
 			ChuanHoaChu(TREE_VT->info.tenVT);
 			ChuanHoaChu(TREE_VT->info.dvt);
@@ -388,7 +373,7 @@ void hieuChinhVatTu(DSVatTu &DSVT) {
 	if(trungMaVT) {
 		hieuChinhMotVatTu(DSVT.TREE_VT, maVT);
 	} else {
-		cout << "Ma vat tu khong ton tai" << endl;
+		cout << "MA VAT TU KHONG TON TAI!" << endl;
 	}
 	system("pause");
 }
@@ -397,7 +382,7 @@ void hieuChinhVatTu(DSVatTu &DSVT) {
 // ====================================== NHAN VIEN ===================================
 // ====================================================================================
 
-// ------------------------- kiem tra trung ma nhan vien -----------------------------
+// -------------------------- kiem tra trung ma nhan vien -----------------------------
 int kiemTraMaNV(DSNhanVien DSNV, string maNVKT) {
 	for (int i = 0; i < DSNV.sl; i++)
 		if (DSNV.nv[i]->maNV.compare(maNVKT) == 0)
@@ -450,6 +435,51 @@ int nhapNhanVien(DSNhanVien &DSNV) {
 	}
 }
 
+void hoanViHaiNV(NhanVien *&p, NhanVien *&q) {
+	NhanVien* tam = new NhanVien;
+	
+	tam->ho = p->ho;
+	tam->maNV = p->maNV;
+	tam->ten = p->ten;
+	tam->phai = p->phai;
+	tam->FirstHD = p->FirstHD;
+
+	p->ho = q->ho;
+	p->maNV = q->maNV;
+	p->ten = q->ten;
+	p->phai = q->phai;
+	p->FirstHD = q->FirstHD;
+
+	q->ho = tam->ho;
+	q->maNV = tam->maNV;
+	q->ten = tam->ten;
+	q->phai = tam->phai;
+	q->FirstHD = tam->FirstHD;
+	
+	delete tam;
+}
+
+void sapXepNhanVien(DSNhanVien &DSNV)
+{
+	for (int i = 0; i < DSNV.sl - 1; i++)
+	{
+		for (int j = i + 1; j < DSNV.sl; j++)
+		{
+			if (DSNV.nv[i]->ten > DSNV.nv[j]->ten)
+			{
+				hoanViHaiNV(DSNV.nv[i], DSNV.nv[j]);
+			}
+			else if (DSNV.nv[i]->ten == DSNV.nv[j]->ten)
+			{
+				if (DSNV.nv[i]->ho > DSNV.nv[j]->ho)
+				{
+					hoanViHaiNV(DSNV.nv[i], DSNV.nv[j]);
+				}
+			}
+		}
+	}
+}
+ 
 //------------------------- xuat danh sach nhan vien -----------------------------------
 void xuatDSNV(DSNhanVien &DSNV) {
 	if(DSNV.sl == 0) {
@@ -659,6 +689,7 @@ void Menu() {
 			}
 			case 7: {
 				cout << endl << " DANH SACH NHAN VIEN " << endl;
+				sapXepNhanVien(DSNV);
 				xuatDSNV(DSNV);
 				getch();
 				break;
