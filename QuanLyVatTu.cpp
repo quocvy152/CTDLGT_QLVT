@@ -204,7 +204,11 @@ void chuyenCaySangMang(TREE TREE_VT, VatTu *vt[], int &nVT) {
 void hoanViHaiVT(nodeVatTu *a, nodeVatTu *b) {
 	nodeVatTu *temp = new nodeVatTu;
 	
-	// thu lai chi gan ->info = ->info
+//	temp->info = a->info;
+//	a->info = b->info;
+//	b->info = temp->info;
+	
+	//thu lai chi gan ->info = ->info
 	temp->info.maVT = a->info.maVT;
 	temp->info.tenVT = a->info.tenVT;
 	temp->info.dvt = a->info.dvt;
@@ -352,6 +356,42 @@ void xoaVatTu(DSVatTu &DSVT) {
 	system("pause");
 }
 
+void hieuChinhMotVatTu(TREE &TREE_VT, string maVT) {
+	if(TREE_VT != NULL) {
+		if(maVT.compare(TREE_VT->info.maVT) == 0) {
+			
+			cin.ignore();
+			cout << "Nhap ten vat tu hieu chinh: ";
+			getline(cin, TREE_VT->info.tenVT);
+			cout << "Nhap don vi tinh vat tu hieu chinh: ";
+			getline(cin, TREE_VT->info.dvt);
+			cout << "Nhap so luong ton vat tu hieu chinh: ";
+			cin >> TREE_VT->info.slTon;
+			
+			ChuanHoaChu(TREE_VT->info.tenVT);
+			ChuanHoaChu(TREE_VT->info.dvt);
+			
+		} else if(maVT.compare(TREE_VT->info.maVT) > 0) {
+			hieuChinhMotVatTu(TREE_VT->pRight, maVT);
+		} else if(maVT.compare(TREE_VT->info.maVT) < 0) {
+			hieuChinhMotVatTu(TREE_VT->pLeft, maVT);
+		}
+	}
+}
+
+void hieuChinhVatTu(DSVatTu &DSVT) {
+	string maVT;
+	cin.ignore();
+	cout << "Nhap ma vat tu can hieu chinh: ";
+	getline(cin, maVT);
+	bool trungMaVT = kiemTraTrungMaVT(DSVT.TREE_VT, maVT);
+	if(trungMaVT) {
+		hieuChinhMotVatTu(DSVT.TREE_VT, maVT);
+	} else {
+		cout << "Ma vat tu khong ton tai" << endl;
+	}
+	system("pause");
+}
 
 // ====================================================================================
 // ====================================== NHAN VIEN ===================================
@@ -573,6 +613,7 @@ void Menu() {
 		system("cls");
 		cout << "1. Them vat tu " << endl;
 		cout << "2. Xoa vat tu" << endl;
+		cout << "3. Hieu chinh vat tu" << endl;
 		cout << "4. Xuat danh sach vat tu" << endl;
 		cout << "5. Them nhan vien" << endl;
 		cout << "6. Hieu chinh nhan vien" << endl;
@@ -590,6 +631,10 @@ void Menu() {
 			}
 			case 2: {
 				xoaVatTu(DSVT);
+				break;
+			}
+			case 3: {
+				hieuChinhVatTu(DSVT);
 				break;
 			}
 			case 4: {
