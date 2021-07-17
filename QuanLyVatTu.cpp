@@ -225,22 +225,30 @@ struct DSVatTu
 // ====================================================================================
 
 // ================================ GHI FILE VAT TU ===================================
-void ghiFileNLR(ofstream &outFile, TREE TREE_VT) {
+void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int nVTChay) {
 	if(TREE_VT != NULL) {
+		nVTChay++;
 		outFile << TREE_VT->info.maVT << ",";
 		outFile << TREE_VT->info.tenVT << ",";
 		outFile << TREE_VT->info.slTon << ",";
-		outFile << TREE_VT->info.dvt << "\n";
-		ghiFileNLR(outFile, TREE_VT->pLeft);
-		ghiFileNLR(outFile, TREE_VT->pRight);
+		
+		// dang ghi toi cuoi file, loai bo ghi xuong dong
+		if(nVTChay == nVT)
+			outFile << TREE_VT->info.dvt;
+		else
+			outFile << TREE_VT->info.dvt << "\n";
+			
+		ghiFileNLR(outFile, TREE_VT->pLeft, nVT, nVTChay);
+		ghiFileNLR(outFile, TREE_VT->pRight, nVT, nVTChay);
 	}
 }
 
 void ghiFileDSVT(DSVatTu &DSVT) {
 	ofstream outFile;
 	outFile.open("DSVT.txt", ios::out);
+	int nVTChay = 0;
 	outFile << DSVT.sl << "\n";
-	ghiFileNLR(outFile, DSVT.TREE_VT);
+	ghiFileNLR(outFile, DSVT.TREE_VT, DSVT.sl, nVTChay);
 	outFile.close();
 }
 
@@ -675,6 +683,19 @@ string taoMaHD(DSNhanVien DSNV) {
 	return tempSoHD;
 }
 
+// ====================================================================================
+// ================================ CHI TIET HOA DON ==================================
+// ====================================================================================
+
+// tim chi tiet hoa don
+int timCTHD(DSChiTietHoaDon &DSCTHD, string maVT)
+{
+	for (int i = 0; i < DSCTHD.sl; i++)
+		if(DSCTHD.ds[i].maVT == maVT) 
+			return i;
+	return -1;
+}
+
 // =============== them 1 chi tiet hoa don ==================
 int themMotCTHD(DSChiTietHoaDon &DSCTHD, ChiTietHoaDon CTHD)
 {  
@@ -686,6 +707,17 @@ int themMotCTHD(DSChiTietHoaDon &DSCTHD, ChiTietHoaDon CTHD)
 	DSCTHD.sl++;
 	
 	return 1;
+}
+
+// =============== loai bo 1 chi tiet hoa don ================
+int xoaMotCTHD(DSChiTietHoaDon &DSCTHD, int i)
+{
+	int j;
+	if(i < 0 || i >= DSCTHD.sl || DSCTHD.sl == 0) return 0;
+	for(j = i + 1;  j < DSCTHD.sl; j++)
+		DSCTHD.ds[j - 1] = DSCTHD.ds[j];
+	DSCTHD.sl--;
+	return 1; 
 }
 
 //======================== lap hoa don ======================
@@ -866,7 +898,11 @@ NhapCTHDXuat:
 					if(slTonBanDau < slXuatRa) 
 					{
 						cout << "SO LUONG VAT TU TRONG KHO KHONG DU!" << endl;
-						cout << "So Luong Ton " << tree->info.tenVT << "Hien Co: " << tree->info.slTon << endl;
+						cout << "So Luong Ton " << tree->info.tenVT << " Hien Co: " << tree->info.slTon << endl;
+						
+						// neu so luong vat tu xuat ko du thi xoa di cthd vua them vo chinh la cthd o cuoi cua hoa don do
+						xoaMotCTHD(p->info.dsChiTietHoaDon, p->info.dsChiTietHoaDon.sl - 1);
+						
 						getch();
 						goto NhapCTHDXuat;
 					} 
@@ -906,6 +942,96 @@ NhapCTHDXuat:
 				}
 			}
 		}
+	}
+}
+
+// ===================== xuat danh sach hoa don cua 1 nhan vien =======================
+int inDSHDMotNhanVien(DSNhanVien DSNV, int vtNV) {
+	if(DSNV.nv[vtNV]->DSHD.FirstHD == NULL) {
+		cout << "NHAN VIEN CHUA LAP HOA DON" << endl;
+		getch();
+		return 0;
+	}
+	
+	cout << endl << "TONG SO HOA DON CUA NHAN VIEN: " << DSNV.nv[vtNV]->DSHD.sl << endl;
+	int stt = 0;
+ 	for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+ 		cout << "========================== HOA DON " << stt++ << "==========================" << endl;
+		cout << "So Hoa Don      : " << p->info.soHD << endl;
+		cout << "Ngay Lap Hoa Don: " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
+		cout << "Loai Hoa Don    : " << p->info.loai << endl;
+	}
+	getch();
+	return 1;
+}
+
+void inChiTietHD(DSNhanVien DSNV, int vtNV, string soHD) {
+	for(PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) 
+	{
+		if (p->info.soHD == soHD) 
+		{
+			if(p->info.dsChiTietHoaDon.sl == 0)
+			{
+				cout << "HOA DON KHONG CO VAT TU NAO!" << endl;
+				break;
+			}
+			for(int i = 0 ; i < p->info.dsChiTietHoaDon.sl ; i++)
+			{
+				cout << "  ============================ CHI TIET VAT TU " << i + 1 << "============================  " << endl;
+				cout << "Ma Vat Tu: " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
+				cout << "So Luong : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
+				cout << "Don Gia  : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
+				cout << "VAT      : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
+			}
+			getch();
+			break;
+		}
+	}
+}
+
+// ================================= xuat hoa don =====================================
+void inHoaDon(DSNhanVien &DSNV) 
+{
+	string soHD, maNV;
+	cin.ignore();
+	cout << "Nhap Ma Nhan Vien Can Xem Hoa Don: ";
+	getline(cin, maNV);
+	
+NhapLai:
+	
+	int vtNV = kiemTraMaNV(DSNV, maNV);
+	
+	if(vtNV == -1) 
+	{
+		cout << "MA NHAN VIEN KHONG TON TAI!" << endl;
+		getch();
+		goto NhapLai;
+	}
+	else 
+	{
+		// in ra danh sach hoa don cua nhan vien
+		// 0: nhan vien chua co hoa don, 1: nhan vien co hoa don
+		int nhanVienCoHD = inDSHDMotNhanVien(DSNV, vtNV);
+		if(!nhanVienCoHD)
+			return;
+		
+NhapSoHD:		
+		cin.ignore();
+		cout << "Nhap So Hoa Don Can Xem: ";
+		getline(cin, soHD);
+		
+		bool tonTaiSoHD = ktTrungMaHD(DSNV, soHD);
+		if(!tonTaiSoHD) 
+		{
+			cout  << "SO HOA DON KHONG TON TAI!" << endl;
+			getch();
+			goto NhapSoHD;
+		}
+		else 
+		{
+			inChiTietHD(DSNV, vtNV, soHD);
+		}
+		
 	}
 }
 
@@ -949,9 +1075,9 @@ void DocFileDSVT(DSVatTu &DSVT)
 	}
 	
 	inFile >> DSVT.sl;
+	inFile.ignore();
 	while(!inFile.eof())
 	{
-		inFile.ignore();
 		TREE vt = KhoiTaoNodeVT();
 		getline(inFile, vt->info.maVT, ',');
 		getline(inFile, vt->info.tenVT, ',');
@@ -985,6 +1111,7 @@ void Menu() {
 		cout << "6. Hieu chinh nhan vien" << endl;
 		cout << "7. Xuat danh sach nhan vien" << endl;
 		cout << "9. Lap hoa don" << endl;
+		cout << "10. In hoa don" << endl;
 		cout << "0. Ket thuc chuong trinh" << endl;
 		
 		int luaChon;
@@ -1034,6 +1161,10 @@ void Menu() {
 			case 9: {
 				cout << endl << " LAP HOA DON " << endl;
 				lapHoaDon(DSNV, DSVT);
+				break;
+			}
+			case 10: {
+				inHoaDon(DSNV);
 				break;
 			}
 			case 0: {
