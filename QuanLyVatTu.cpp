@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string.h>
 #include <ctime>
 #include <conio.h>
@@ -225,9 +226,9 @@ struct DSVatTu
 // ====================================================================================
 
 // ================================ GHI FILE VAT TU ===================================
-void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int nVTChay) {
+void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int &nVTChay) {
 	if(TREE_VT != NULL) {
-		nVTChay++;
+		++nVTChay;
 		outFile << TREE_VT->info.maVT << ",";
 		outFile << TREE_VT->info.tenVT << ",";
 		outFile << TREE_VT->info.slTon << ",";
@@ -350,7 +351,7 @@ void themMotVatTu(TREE &TREE_VT, nodeVatTu *p) {
 }
 
 string taoMaVT(TREE TREE_VT) {
-	string formatMaVT = "VT0000000000";
+	string formatMaVT = "VT00000000";
 	do {
 		for (int i = 2; i < formatMaVT.length(); i++)
 			formatMaVT[i] = rand() % (4) + 48;
@@ -372,6 +373,7 @@ void nhapVatTu(DSVatTu &DSVT){
 	
 	themMotVatTu(DSVT.TREE_VT, p);
 	DSVT.sl++;
+	ghiFileDSVT(DSVT);
 }
 
 void xuatDanhSachVT(VatTu *vt[], int nVT){
@@ -387,6 +389,29 @@ void xuatDanhSachVT(VatTu *vt[], int nVT){
 void giaiPhongDSVatTu(VatTu *vt[], int nVT) {
 	for(int i = 0; i < nVT; i++)
 		delete vt[i];
+}
+
+// kiem tra ma vat tu da duoc lap chi tiet hoa don chua
+/**
+ * 2: danh sach nhan vien rong
+ * 1: vat tu do da lap choi tiet hoa don
+ * 0: vat tu do chua lap chi tiet hoa don
+ */
+int vatTuDaLapCTHD(DSNhanVien &DSNV, string maVT) {
+	if(DSNV.sl == 0) {
+		cout << "DANH SACH NHAN VIEN RONG!" << endl;
+		return 2;
+	}
+	
+	for(int i = 0; i < DSNV.sl; i++) {
+		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+			for(int i = 0; i < p->info.dsChiTietHoaDon.sl; i++) {
+				if(maVT.compare(p->info.dsChiTietHoaDon.ds[i].maVT) == 0) 
+					return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 void nodeTheMang(TREE TREE_VT, nodeVatTu *&x) {
@@ -430,14 +455,26 @@ void xoaVatTu(DSVatTu &DSVT) {
 	cin.ignore();
 	getline(cin, maVT);
 	
- 	if(!kiemTraTrungMaVT(DSVT.TREE_VT, maVT)) {
+	TREE TREE_VT = timNodeVT(DSVT.TREE_VT, maVT);
+ 	if(!TREE_VT) 
+	{
 		cout << "MA VAT TU KHONG TON TAI!" << endl;
-	} else {
+	} 
+	else 
+	{
+		if(TREE_VT->info.slTon != 0) 
+		{
+			cout << "VAT TU VAN CON SO LUONG TON!" << endl;
+			getch();
+			return;
+		}
+		
 		xoaMotVatTu(DSVT.TREE_VT, maVT);
 		DSVT.sl--;
 		cout << "XOA THANH CONG!" << endl;
+		ghiFileDSVT(DSVT);
 	}
-	system("pause");
+	getch();
 }
 
 void hieuChinhMotVatTu(TREE &TREE_VT, string maVT) {
@@ -785,7 +822,7 @@ void lapHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT)
 		} while(laNgayHopLe(p->info.ngayLap) == false);
 		
 		//--------- them hd vao ds hoa don --------
-		themMotHD(DSNV.nv[vtNVLap]->DSHD.FirstHD, p);
+		themMotHD(DSNV.nv[vtNVLap]->DSHD.FirstHD, p); ++DSNV.nv[vtNVLap]->DSHD.sl;
 		cout << "LAP HOA DON THANH CONG! NHAN PHIM BAT KI DE TIEP TUC NHAP CHI TIET HOA DON" << endl;
 		getch();
 		cout << endl << "Hoa Don: " << p->info.loai << " Ma Hoa Don: " << p->info.soHD << " Ngay Lap Hoa Don: " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
@@ -956,7 +993,7 @@ int inDSHDMotNhanVien(DSNhanVien DSNV, int vtNV) {
 	cout << endl << "TONG SO HOA DON CUA NHAN VIEN: " << DSNV.nv[vtNV]->DSHD.sl << endl;
 	int stt = 0;
  	for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
- 		cout << "========================== HOA DON " << stt++ << "==========================" << endl;
+ 		cout << "========================== HOA DON " << ++stt << "==========================" << endl;
 		cout << "So Hoa Don      : " << p->info.soHD << endl;
 		cout << "Ngay Lap Hoa Don: " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
 		cout << "Loai Hoa Don    : " << p->info.loai << endl;
@@ -965,7 +1002,7 @@ int inDSHDMotNhanVien(DSNhanVien DSNV, int vtNV) {
 	return 1;
 }
 
-void inChiTietHD(DSNhanVien DSNV, int vtNV, string soHD) {
+void inChiTietHD(DSNhanVien DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 	for(PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) 
 	{
 		if (p->info.soHD == soHD) 
@@ -975,22 +1012,45 @@ void inChiTietHD(DSNhanVien DSNV, int vtNV, string soHD) {
 				cout << "HOA DON KHONG CO VAT TU NAO!" << endl;
 				break;
 			}
-			for(int i = 0 ; i < p->info.dsChiTietHoaDon.sl ; i++)
+			else
 			{
-				cout << "  ============================ CHI TIET VAT TU " << i + 1 << "============================  " << endl;
-				cout << "Ma Vat Tu: " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
-				cout << "So Luong : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
-				cout << "Don Gia  : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
-				cout << "VAT      : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
+				cout << "************ THONG TIN HOA DON ************" << endl;
+				cout << "So Hoa Don : " << p->info.soHD << endl;
+				cout << "Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
+				cout << "Loai       : " << p->info.loai << endl;
+				
+				float tongCong = 0;
+				for(int i = 0 ; i < p->info.dsChiTietHoaDon.sl ; i++)
+				{
+					cout << "  ============================ CHI TIET VAT TU " << i + 1 << "============================  " << endl;
+					cout << "Ma Vat Tu : " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
+					
+					// lay ra ten vat tu de hien thi dua vao ma vat tu cua CTHD
+					TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[i].maVT);
+					cout << "Ten Vat Tu: " << TREE_VT->info.tenVT << endl;
+					
+					cout << "So Luong  : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
+					cout << "Don Gia   : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
+					cout << "VAT       : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
+					
+					// tinh thanh tien = soLuong * donGia + VAT
+					float thanhTienChuaThue = p->info.dsChiTietHoaDon.ds[i].soLuong * (float)(p->info.dsChiTietHoaDon.ds[i].donGia);
+					float tienThue = (thanhTienChuaThue * p->info.dsChiTietHoaDon.ds[i].VAT) / 100;
+					float thanhTien = thanhTienChuaThue + tienThue;
+					tongCong += thanhTien;
+					cout << setprecision(12);
+					cout << "Thanh tien: " << thanhTien << endl;
+				}
+				cout << "TONG TIEN HOA DON: " << tongCong << endl;
+				getch();
+				break;
 			}
-			getch();
-			break;
 		}
 	}
 }
 
 // ================================= xuat hoa don =====================================
-void inHoaDon(DSNhanVien &DSNV) 
+void inHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT) 
 {
 	string soHD, maNV;
 	cin.ignore();
@@ -1029,7 +1089,11 @@ NhapSoHD:
 		}
 		else 
 		{
-			inChiTietHD(DSNV, vtNV, soHD);
+			cout << "***** THONG TIN NHAN VIEN LAP HOA DON *****" << endl;
+			cout << "Ho va Ten  : " << DSNV.nv[vtNV]->ho  << " " << DSNV.nv[vtNV]->ten << endl;
+			cout << "Gioi tinh  : " << DSNV.nv[vtNV]->phai << endl;
+			
+			inChiTietHD(DSNV, vtNV, soHD, DSVT);
 		}
 		
 	}
@@ -1164,9 +1228,14 @@ void Menu() {
 				break;
 			}
 			case 10: {
-				inHoaDon(DSNV);
+				inHoaDon(DSNV, DSVT);
 				break;
 			}
+//			case 11: {
+//				cout << "DA LAP HOA DON CHUA: " << vatTuDaLapCTHD(DSNV, "VT00000005");
+//				getch();
+//				break;
+//			}
 			case 0: {
 				cout << "TAM BIET. BAN DA DUNG CHUONG TRINH!" << endl;
 				checkStop = false;
