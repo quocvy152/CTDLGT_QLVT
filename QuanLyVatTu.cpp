@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <string.h>
 #include <ctime>
 #include <conio.h>
@@ -146,6 +147,26 @@ bool laNgayHopLe(Date date) {
 	return true;
 }
 
+// kiem tra 2 ngay xem ngay nao lon hon
+int soSanhThoiGian(Date a, Date b) {
+	if(a.nam > b.nam)
+		return 1;
+	else if(a.nam < b.nam)
+		return -1;
+		
+	if(a.thang > b.thang)
+		return 1;
+	else if(a.thang < b.thang)
+		return -1;
+	
+	if(a.ngay > b.ngay)
+		return 1;
+	else if(a.ngay < b.ngay)
+		return -1;
+	
+	return 0;
+}
+
 // ====================================================================================
 // ================================= CHI TIET HOA DON =================================
 // ====================================================================================
@@ -237,7 +258,7 @@ void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int &nVTChay) {
 		if(nVTChay == nVT)
 			outFile << TREE_VT->info.dvt;
 		else
-			outFile << TREE_VT->info.dvt << "\n";
+			outFile << TREE_VT->info.dvt << endl;
 			
 		ghiFileNLR(outFile, TREE_VT->pLeft, nVT, nVTChay);
 		ghiFileNLR(outFile, TREE_VT->pRight, nVT, nVTChay);
@@ -248,9 +269,43 @@ void ghiFileDSVT(DSVatTu &DSVT) {
 	ofstream outFile;
 	outFile.open("DSVT.txt", ios::out);
 	int nVTChay = 0;
-	outFile << DSVT.sl << "\n";
+	outFile << DSVT.sl << endl;
 	ghiFileNLR(outFile, DSVT.TREE_VT, DSVT.sl, nVTChay);
 	outFile.close();
+}
+
+// ================================ GHI FILE NHAN VIEN ================================
+void ghiFileDSNV(DSNhanVien &DSNV) {
+	ofstream outFile;
+	outFile.open("DSNV.txt", ios::out);
+	
+	outFile << DSNV.sl << endl;
+	
+	for(int i = 0; i < DSNV.sl; i++) {
+		outFile << DSNV.nv[i]->maNV << ",";
+		outFile << DSNV.nv[i]->ho << ",";
+		outFile << DSNV.nv[i]->ten << ",";
+		outFile << DSNV.nv[i]->phai << endl;
+		
+		// bat dau ghi thong tin cua hoa don
+		outFile << DSNV.nv[i]->DSHD.sl << endl;
+		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+			outFile << p->info.soHD << ",";
+			outFile << p->info.ngayLap.ngay << ",";
+			outFile << p->info.ngayLap.thang << ",";
+			outFile << p->info.ngayLap.nam << ",";
+			outFile << p->info.loai << endl;
+			
+			// bat dau ghi thong tin chi tiet hoa don cua hoa don do
+			outFile << p->info.dsChiTietHoaDon.sl << endl;
+			for(int i = 0; i < p->info.dsChiTietHoaDon.sl; i++) {
+				outFile << p->info.dsChiTietHoaDon.ds[i].maVT << ",";
+				outFile << p->info.dsChiTietHoaDon.ds[i].soLuong << ",";
+				outFile << p->info.dsChiTietHoaDon.ds[i].donGia << ",";
+				outFile << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
+			}
+		}
+	}
 }
 
 // ====================================================================================
@@ -399,7 +454,6 @@ void giaiPhongDSVatTu(VatTu *vt[], int nVT) {
  */
 int vatTuDaLapCTHD(DSNhanVien &DSNV, string maVT) {
 	if(DSNV.sl == 0) {
-		cout << "DANH SACH NHAN VIEN RONG!" << endl;
 		return 2;
 	}
 	
@@ -449,7 +503,7 @@ void xoaMotVatTu(TREE &TREE_VT, string maVT) {
 	}
 }
 
-void xoaVatTu(DSVatTu &DSVT) {
+void xoaVatTu(DSNhanVien &DSNV, DSVatTu &DSVT) {
 	string maVT;
 	cout << "Nhap ma Vat Tu: ";
 	cin.ignore();
@@ -469,10 +523,28 @@ void xoaVatTu(DSVatTu &DSVT) {
 			return;
 		}
 		
-		xoaMotVatTu(DSVT.TREE_VT, maVT);
-		DSVT.sl--;
-		cout << "XOA THANH CONG!" << endl;
-		ghiFileDSVT(DSVT);
+		int daLapCTHD = vatTuDaLapCTHD(DSNV, maVT);
+		if(daLapCTHD == 2) 
+		{
+			cout << "DANH SACH NHAN VIEN RONG! KHONG THE XOA VAT TU!" << endl;
+			getch();
+			return;
+		}
+			
+		if(daLapCTHD == 1)
+		{
+			cout << "VAT TU DA LAP CHI TIET HOA DON! KHONG THE XOA VAT TU!" << endl;
+			getch();
+			return;
+		}
+		
+		if(daLapCTHD == 0)
+		{
+			xoaMotVatTu(DSVT.TREE_VT, maVT);
+			DSVT.sl--;
+			cout << "XOA THANH CONG!" << endl;
+			ghiFileDSVT(DSVT);
+		}
 	}
 	getch();
 }
@@ -565,6 +637,7 @@ int nhapNhanVien(DSNhanVien &DSNV) {
 		ChuanHoaChu(p->phai);
 		
 		themMotNV(DSNV, p);
+		ghiFileDSNV(DSNV);
 		cout << "  THEM THANH CONG  " << endl;
 	}
 }
@@ -664,6 +737,7 @@ NhapLai:
 		ChuanHoaChu(DSNV.nv[vt]->ten);
 		ChuanHoaChu(DSNV.nv[vt]->phai);
 		
+		ghiFileDSNV(DSNV);
 		cout << "THAY DOI THANH CONG! " << endl;
 	}
 }
@@ -883,6 +957,7 @@ NhapCTHDNhap:
 						if(luu == "Y" || luu == "y") 
 						{
 							ghiFileDSVT(DSVT);
+							ghiFileDSNV(DSNV);
 							cout << "GHI FILE THANH CONG!" << endl;
 						}
 						else if(luu == "N" || luu == "n") 
@@ -967,6 +1042,7 @@ NhapCTHDXuat:
 							if(luu == "Y" || luu == "y") 
 							{
 								ghiFileDSVT(DSVT);
+								ghiFileDSNV(DSNV);
 								cout << "GHI FILE THANH CONG!" << endl;
 							}
 							else if(luu == "N" || luu == "n") 
@@ -1053,11 +1129,10 @@ void inChiTietHD(DSNhanVien DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 void inHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT) 
 {
 	string soHD, maNV;
+NhapLai:
 	cin.ignore();
 	cout << "Nhap Ma Nhan Vien Can Xem Hoa Don: ";
 	getline(cin, maNV);
-	
-NhapLai:
 	
 	int vtNV = kiemTraMaNV(DSNV, maNV);
 	
@@ -1107,23 +1182,63 @@ NhapSoHD:
 void DocFileDSNV(DSNhanVien &DSNV) 
 {
 	ifstream inFile;
+	string tempNgay, tempThang, tempNam;
+	string tempSL, tempDG, tempVAT;
 	inFile.open("DSNV.txt", ios_base::in);
 	if(inFile.fail()) {
 		cout << "FILE DANH SACH SINH VIEN KHONG TON TAI!" << endl;
 		return;
 	}
 	
-	while(!inFile.eof()) 
-	{
-		//inFile.ignore();
-		NhanVien* nv = new NhanVien;
+	// bien luu tong nhan vien tu file dua vao bien nay de dat dieu kien vong lap
+	int tongNV;
+	
+	// doc thong tin nhan vien
+	inFile >> tongNV;
+	
+	for(int i = 0; i < tongNV; i++) {
+		inFile.ignore();
+		NhanVien *nv = new NhanVien;
+		
 		getline(inFile, nv->maNV, ',');
 		getline(inFile, nv->ho, ',');
 		getline(inFile, nv->ten, ',');
 		getline(inFile, nv->phai, '\n');
-
+		
+		// doc thong tin hoa don cua nhan vien do
+		inFile >> nv->DSHD.sl;
+		
+		for(int j = 0; j < nv->DSHD.sl; j++) {
+			inFile.ignore();
+			PTRHD hd = khoiTaoNodeHD();
+			getline(inFile, hd->info.soHD, ',');
+			
+			// istringstream de ep kieu string to int
+			getline(inFile, tempNgay, ','); istringstream(tempNgay) >> hd->info.ngayLap.ngay;
+			getline(inFile, tempThang, ','); istringstream(tempThang) >> hd->info.ngayLap.thang;
+			getline(inFile, tempNam, ','); istringstream(tempNam) >> hd->info.ngayLap.nam;
+			getline(inFile, hd->info.loai, '\n');
+			
+			// doc thong tin chi tiet  hoa don cua hoa don do
+			int tongCTHD;
+			inFile >> tongCTHD;
+			
+			for(int i = 0; i < tongCTHD; i++) {
+				ChiTietHoaDon cthd;
+				getline(inFile, cthd.maVT, ',');
+				getline(inFile, tempSL, ','); istringstream(tempSL) >> cthd.soLuong;
+				getline(inFile, tempDG, ','); istringstream(tempDG) >> cthd.donGia;
+				getline(inFile, tempVAT, '\n'); istringstream(tempVAT) >> cthd.soLuong;
+				
+				themMotCTHD(hd->info.dsChiTietHoaDon, cthd);
+			}
+			
+			themMotHD(nv->DSHD.FirstHD, hd);
+		}
+		
 		themMotNV(DSNV, nv);
 	}
+	
 	inFile.close();
 }
 
@@ -1188,7 +1303,7 @@ void Menu() {
 				break;
 			}
 			case 2: {
-				xoaVatTu(DSVT);
+				xoaVatTu(DSNV, DSVT);
 				break;
 			}
 			case 3: {
@@ -1231,11 +1346,6 @@ void Menu() {
 				inHoaDon(DSNV, DSVT);
 				break;
 			}
-//			case 11: {
-//				cout << "DA LAP HOA DON CHUA: " << vatTuDaLapCTHD(DSNV, "VT00000005");
-//				getch();
-//				break;
-//			}
 			case 0: {
 				cout << "TAM BIET. BAN DA DUNG CHUONG TRINH!" << endl;
 				checkStop = false;
