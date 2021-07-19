@@ -747,8 +747,56 @@ NhapLai:
 	}
 }
 
-//---------------------------------- xoa nhan vien -------------------------------------
+int xoaMotNhanVien(DSNhanVien &DSNV, int vtNV)
+{
+	delete DSNV.nv[vtNV];
+	for(int j = vtNV + 1;  j < DSNV.sl; j++)
+		DSNV.nv[j - 1] = DSNV.nv[j];
+	DSNV.sl--;
+	return 1; 
+}
 
+
+//---------------------------------- xoa nhan vien -------------------------------------
+void xoaNhanVien(DSNhanVien &DSNV) {
+	string maNV;
+	
+NhapMaNV:
+	cout << "Nhap ma nhan vien can xoa: ";
+	cin.ignore();
+	getline(cin, maNV);
+	
+	if(DSNV.sl == 0) 
+	{
+		cout << "KHONG THE XOA! DANH SACH NHAN VIEN RONG!" << endl;
+		getch();
+		return;
+	}
+	
+	int vtNV = kiemTraMaNV(DSNV, maNV);
+	if(vtNV == -1)
+	{
+		cout << "MA NHAN VIEN KHONG TON TAI!" << endl;
+		getch();
+		goto NhapMaNV;
+	}
+	
+	if(DSNV.nv[vtNV]->DSHD.FirstHD != NULL)
+	{
+		cout << "KHONG THE XOA! NHAN VIEN DA LAP HOA DON!" << endl;
+		getch();
+		return;
+	}
+	
+	int trangThaiXoa = xoaMotNhanVien(DSNV, vtNV);
+	if(trangThaiXoa == 1)
+	{
+		cout << "XOA NHAN VIEN THANH CONG!" << endl;
+		ghiFileDSNV(DSNV);
+		getch();
+		return;
+	}
+}
 
 // ====================================================================================
 // ====================================== HOA DON =====================================
@@ -1238,6 +1286,13 @@ int ngayNamTrongKhoang(Date ngayBatDau, Date ngayKetThuc, Date ngayKiemTra) {
 	
 }
 
+// =================== ham in khoang thoi gian ======================================
+void inKhoanThoiGian(Date ngayBatDau, Date ngayKetThuc) {
+	cout << endl << "===================== KHOANG THOI GIAN =========================" << endl;
+	cout << "Tu Ngay: " << ngayBatDau.ngay << "/" << ngayBatDau.thang << "/" << ngayBatDau.nam;
+	cout << " Den Ngay: " << ngayKetThuc.ngay << "/" << ngayKetThuc.thang << "/" << ngayKetThuc.nam << endl << endl;
+}
+
 void inThongTinHoaDon(NhanVien *nv, PTRHD hoaDon) {
 	cout << "***** THONG TIN HOA DON *****" << endl;
 	cout << "So Hoa Don      : " << hoaDon->info.soHD << endl;
@@ -1293,6 +1348,7 @@ NhapNgayKT:
 		goto NhapNgayBD;
 	}
 		
+	inKhoanThoiGian(ngayBatDau, ngayKetThuc);
 	for(int i = 0; i < DSNV.sl; i++) {
 		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) {
 			if(ngayNamTrongKhoang(ngayBatDau, ngayKetThuc, p->info.ngayLap))
@@ -1482,6 +1538,10 @@ void Menu() {
 			case 11: {
 				inHoaDonTrongKhoangTG(DSNV);
 				getch();
+				break;
+			}
+			case 12: {
+				xoaNhanVien(DSNV);
 				break;
 			}
 			case 0: {
