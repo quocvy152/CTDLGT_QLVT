@@ -11,6 +11,7 @@
 // define constant
 #define MAX_CTHD 20
 #define MAX_NHANVIEN 500
+#define MAX_THONG_KE_DOANH_THU 500
 
 #define TRUE 1
 #define FALSE 0
@@ -167,6 +168,46 @@ int soSanhThoiGian(Date a, Date b) {
 	return 0;
 }
 
+// ========= kiem tra mot ngay co nam trong khoang thoi gian cho truoc =================
+/*
+ * return: 1 ==> ngay kiem tra nam trong khoang thoi gian cho truoc
+ * return: 0 ==> ngay kiem tra nam ngoai khoang thoi gian cho truoc
+ */
+int ngayNamTrongKhoang(Date ngayBatDau, Date ngayKetThuc, Date ngayKiemTra) {
+	// neu nam kiem tra vuot khoi khoang namBatDau <= namKiemTra <= namKetThuc
+	if(ngayKiemTra.nam < ngayBatDau.nam || ngayKiemTra.nam > ngayKetThuc.nam)
+		return 0;
+		
+	// neu nam kiem tra bang nam bat dau thi kiem tra toi thang va ngay
+	if(ngayKiemTra.nam == ngayBatDau.nam) 
+	{
+		if(ngayKiemTra.thang < ngayBatDau.thang)
+			return 0;
+			
+		if(ngayKiemTra.thang == ngayBatDau.thang && ngayKiemTra.ngay < ngayBatDau.ngay)
+			return 0;
+	}
+	
+	// neu nam kiem tra bang nam ket thuc thi kiem tra toi ngay va thang
+	if(ngayKiemTra.nam == ngayKetThuc.nam)
+	{
+		if(ngayKiemTra.thang > ngayKetThuc.thang)
+			return 0;
+		
+		if(ngayKiemTra.thang == ngayKetThuc.thang && ngayKiemTra.ngay > ngayKetThuc.ngay)
+			return 0;
+	}
+	
+	return 1;
+}
+
+// =================== ham in khoang thoi gian ======================================
+void inKhoanThoiGian(Date ngayBatDau, Date ngayKetThuc) {
+	cout << endl << "===================== KHOANG THOI GIAN =========================" << endl;
+	cout << "Tu Ngay: " << ngayBatDau.ngay << "/" << ngayBatDau.thang << "/" << ngayBatDau.nam;
+	cout << " Den Ngay: " << ngayKetThuc.ngay << "/" << ngayKetThuc.thang << "/" << ngayKetThuc.nam << endl << endl;
+}
+
 // ====================================================================================
 // ================================= CHI TIET HOA DON =================================
 // ====================================================================================
@@ -241,6 +282,219 @@ struct DSVatTu
 	TREE TREE_VT = NULL;
 	int sl = 0;
 };
+
+// ====================================================================================
+// ============================== THONG KE DOANH THU  =================================
+// ====================================================================================
+struct DoanhThu {
+	string maVT;
+	string tenVT;
+	long long doanhThu = 0;
+};
+
+struct DSDoanhThu {
+	DoanhThu *dt[MAX_THONG_KE_DOANH_THU];
+	int sl = 0;
+};
+
+// ======================== tinh thanh tien cua hoa don ============================
+float tinhThanhTienCTHD(ChiTietHoaDon cthd) {
+	// tinh thanh tien = soLuong * donGia + VAT
+	float thanhTienChuaThue = cthd.soLuong * (float)(cthd.donGia);
+	float tienThue = (thanhTienChuaThue * cthd.VAT) / 100;
+	float thanhTien = thanhTienChuaThue + tienThue;
+	return thanhTien;
+}
+
+// ham tim va tra ve node vat tu khi trung
+TREE timNodeVT(TREE TREE_VT, string maVT)
+{
+	if (TREE_VT != NULL) 
+	{
+		if(maVT.compare(TREE_VT->info.maVT) == 0)
+		{
+			return TREE_VT;
+		}
+		else if(maVT.compare(TREE_VT->info.maVT) > 0)
+		{
+			return timNodeVT(TREE_VT->pRight, maVT);
+		}
+		else if(maVT.compare(TREE_VT->info.maVT) < 0)
+		{
+			return timNodeVT(TREE_VT->pLeft, maVT);
+		}
+	} 
+	else
+	{
+		return NULL;
+	}
+}
+
+// ============================ them mot doanh thu ====================================
+void themMotDoanhThu(DSDoanhThu &DSDT, DoanhThu *doanhThu) {
+	if(DSDT.sl == MAX_THONG_KE_DOANH_THU)
+	{
+		cout << "DANH SACH THONG KE DOANH THU DAY!" << endl;
+		getch();
+		return;
+	}
+		
+	DSDT.dt[DSDT.sl] = doanhThu;
+	++DSDT.sl;
+}
+
+// ====================== ham kiem tra vat tu da co doanh thu chua ====================
+int daCoDoanhThu(DSDoanhThu &DSDT, string maVT) {
+	for(int i = 0; i < DSDT.sl; i++)
+		if(DSDT.dt[i]->maVT == maVT)
+			return i;
+	return -1;
+}
+
+// ===================== hoan vi hai doanh thu de sap xep =============================
+void hoanDoiDoanhThu(DoanhThu *&a, DoanhThu *&b)
+{
+	DoanhThu *tempDoanhThu = new DoanhThu;
+	
+	tempDoanhThu->maVT = a->maVT;
+	tempDoanhThu->tenVT = a->tenVT;
+	tempDoanhThu->doanhThu = a->doanhThu;
+	
+	a->maVT = b->maVT;
+	a->tenVT = b->tenVT;
+	a->doanhThu = b->doanhThu;
+	
+	b->maVT = tempDoanhThu->maVT;
+	b->tenVT = tempDoanhThu->tenVT;
+	b->doanhThu = tempDoanhThu->doanhThu;
+	
+	delete tempDoanhThu;
+}
+
+void sapXepDoanhThu(DSDoanhThu &DSDT)
+{
+	for(int i = 0; i < DSDT.sl - 1; i++) {
+		for(int j = i + 1; j < DSDT.sl; j++) {
+			if(DSDT.dt[i]->doanhThu < DSDT.dt[j]->doanhThu) {
+				hoanDoiDoanhThu(DSDT.dt[i], DSDT.dt[j]);
+			}
+		}
+	}
+}
+
+// ============ tra ve mang doanh thu cua cac vat tu thuoc hoa don xuat ==============
+void doanhThuThuocHDXuat(DSNhanVien &DSNV, DSVatTu &DSVT, DSDoanhThu &DSDT, Date ngayBatDau, Date ngayKetThuc) {
+	for(int i = 0; i < DSNV.sl; i++) 
+	{
+		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) 
+		{
+			// chi liet ke cac doanh thu cua vat tu nam trong hoa don xuat va nam trong khoang thoi gian mong muon
+			if(p->info.loai == "X" && ngayNamTrongKhoang(ngayBatDau, ngayKetThuc, p->info.ngayLap)) 
+			{
+				for(int j = 0; j < p->info.dsChiTietHoaDon.sl; j++) 
+				{
+					float thanhTien = tinhThanhTienCTHD(p->info.dsChiTietHoaDon.ds[j]);
+					int kiemTraDaCoDT = daCoDoanhThu(DSDT, p->info.dsChiTietHoaDon.ds[j].maVT);
+					if(kiemTraDaCoDT == -1) 
+					{
+						TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[j].maVT);
+						
+						DoanhThu *doanhThu = new DoanhThu;
+						doanhThu->maVT = TREE_VT->info.maVT;
+						doanhThu->tenVT = TREE_VT->info.tenVT;
+						doanhThu->doanhThu = thanhTien;
+						themMotDoanhThu(DSDT, doanhThu);
+					}
+					else 
+					{
+						DSDT.dt[kiemTraDaCoDT]->doanhThu = DSDT.dt[kiemTraDaCoDT]->doanhThu + thanhTien;
+					}
+				}
+			}
+		}
+	}
+}
+
+void taoLaiDoanhThu(DSDoanhThu &DSDT) {
+	for(int i = 0; i < DSDT.sl; i++) 
+		delete DSDT.dt[i];
+	
+	DSDT.sl = 0;
+}
+
+// =================== xuat ra 10 vat tu co doanh thu cao nhat ========================
+void xuatTopDoanhThu(DSDoanhThu &DSDT) {
+	if(DSDT.sl == 0)
+	{
+		cout << "**** KHONG CO VAT TU NAO DUOC LAP HOA DON XUAT TRONG KHOANG THOI GIAN DA NHAP ****" << endl;
+		getch();
+		return;
+	}
+	
+	// lay ra so doanh thu can xuat
+	int soLuongXuat = 0;
+	DSDT.sl <= 10 ? soLuongXuat = DSDT.sl : soLuongXuat = 10;
+	// chi lay ra 10 vat tu dau tien
+	for(int i = 0; i < soLuongXuat; i++) {
+		cout << "Ma Vat Tu  : " << DSDT.dt[i]->maVT << endl;
+		cout << "Ten Vat Tu : " << DSDT.dt[i]->tenVT << endl;
+		cout << "Doanh Thu  : " << DSDT.dt[i]->doanhThu << endl;
+	}
+	getch();
+}
+
+// ========= thong ke 10 vat tu co doanh thu cao nhat trong khoang thoi gian ==========
+void thongKeDoanhThu(DSNhanVien &DSNV, DSVatTu &DSVT, DSDoanhThu &DSDT) {
+	Date ngayBatDau, ngayKetThuc;
+	cout << "********** THONG KE TOP 10 VAT TU CO DOANH THU CAO NHAT TRONG KHOANG THOI GIAN **********" << endl;
+	cout << "Nhap Vao Khoang Thoi Gian Ban Can Thong Ke" << endl;
+	
+NhapNgayBatDau:	
+	cout << "** NGAY BAT DAU **" << endl;
+	cout << "Ngay: "; cin >> ngayBatDau.ngay;
+	cout << "Thang: "; cin >> ngayBatDau.thang;
+	cout << "Nam: "; cin >> ngayBatDau.nam;
+	bool trangThaiNBD = laNgayHopLe(ngayBatDau);
+	if(!trangThaiNBD)
+	{
+		cout << "NGAY BAT DAU KHONG TON TAI!" << endl;
+		getch();
+		goto NhapNgayBatDau;
+	}
+
+NhapNgayKetThuc:
+	cout << "NGAY KET THUC " << endl;
+	cout << "Ngay: "; cin >> ngayKetThuc.ngay;
+	cout << "Thang: "; cin >> ngayKetThuc.thang;
+	cout << "Nam: "; cin >> ngayKetThuc.nam;
+	bool trangThaiNKT = laNgayHopLe(ngayBatDau);
+	if(!trangThaiNKT)
+	{
+		cout << "NGAY BAT DAU KHONG TON TAI!" << endl;
+		getch();
+		goto NhapNgayKetThuc;
+	}
+	
+	int soSanhHaiNgay = soSanhThoiGian(ngayBatDau, ngayKetThuc);
+	if(soSanhHaiNgay == 1)
+	{
+		cout << "KHOANG THOI GIAN KHONG HOP LE! NGAY BAT DAU LON HON NGAY KET THUC!" << endl;
+		getch();
+		goto NhapNgayBatDau;
+	}
+	else if(soSanhHaiNgay == 0)
+	{
+		cout << "KHOANG THOI GIAN KHONG HOP LE! NGAY BAT DAU VA NGAY KET THUC BANG NHAU!" << endl;
+		getch();
+		goto NhapNgayBatDau;
+	}
+	
+	doanhThuThuocHDXuat(DSNV, DSVT, DSDT, ngayBatDau, ngayKetThuc);
+	sapXepDoanhThu(DSDT);
+	inKhoanThoiGian(ngayBatDau, ngayKetThuc);
+	xuatTopDoanhThu(DSDT);
+	taoLaiDoanhThu(DSDT);
+}
 
 // ====================================================================================
 // =================================== GHI FILE =======================================
@@ -323,30 +577,6 @@ TREE KhoiTaoNodeVT () {
 	p->pRight = NULL;
 	p->pLeft = NULL;
 	return p;
-}
-
-// ham tim va tra ve node vat tu khi trung
-TREE timNodeVT(TREE TREE_VT, string maVT)
-{
-	if (TREE_VT != NULL) 
-	{
-		if(maVT.compare(TREE_VT->info.maVT) == 0)
-		{
-			return TREE_VT;
-		}
-		else if(maVT.compare(TREE_VT->info.maVT) > 0)
-		{
-			return timNodeVT(TREE_VT->pRight, maVT);
-		}
-		else if(maVT.compare(TREE_VT->info.maVT) < 0)
-		{
-			return timNodeVT(TREE_VT->pLeft, maVT);
-		}
-	} 
-	else
-	{
-		return NULL;
-	}
 }
 
 void chuyenCaySangMang(TREE TREE_VT, VatTu *vt[], int &nVT) {
@@ -1120,15 +1350,6 @@ NhapCTHDXuat:
 	}
 }
 
-// ======================== tinh thanh tien cua hoa don ============================
-float tinhThanhTienCTHD(ChiTietHoaDon cthd) {
-	// tinh thanh tien = soLuong * donGia + VAT
-	float thanhTienChuaThue = cthd.soLuong * (float)(cthd.donGia);
-	float tienThue = (thanhTienChuaThue * cthd.VAT) / 100;
-	float thanhTien = thanhTienChuaThue + tienThue;
-	return thanhTien;
-}
-
 // ========================== tinh tri gia cua hoa don =============================
 float tinhTriGiaHD(DSChiTietHoaDon &DSCTHD) {
 	float tongCong = 0;
@@ -1250,47 +1471,6 @@ NhapSoHD:
 		}
 		
 	}
-}
-
-// ========= kiem tra mot ngay co nam trong khoang thoi gian cho truoc =================
-/*
- * return: 1 ==> ngay kiem tra nam trong khoang thoi gian cho truoc
- * return: 0 ==> ngay kiem tra nam ngoai khoang thoi gian cho truoc
- */
-int ngayNamTrongKhoang(Date ngayBatDau, Date ngayKetThuc, Date ngayKiemTra) {
-	// neu nam kiem tra vuot khoi khoang namBatDau <= namKiemTra <= namKetThuc
-	if(ngayKiemTra.nam < ngayBatDau.nam || ngayKiemTra.nam > ngayKetThuc.nam)
-		return 0;
-		
-	// neu nam kiem tra bang nam bat dau thi kiem tra toi thang va ngay
-	if(ngayKiemTra.nam == ngayBatDau.nam) 
-	{
-		if(ngayKiemTra.thang < ngayBatDau.thang)
-			return 0;
-			
-		if(ngayKiemTra.thang == ngayBatDau.thang && ngayKiemTra.ngay < ngayBatDau.ngay)
-			return 0;
-	}
-	
-	// neu nam kiem tra bang nam ket thuc thi kiem tra toi ngay va thang
-	if(ngayKiemTra.nam == ngayKetThuc.nam)
-	{
-		if(ngayKiemTra.thang > ngayKetThuc.thang)
-			return 0;
-		
-		if(ngayKiemTra.thang == ngayKetThuc.thang && ngayKiemTra.ngay > ngayKetThuc.ngay)
-			return 0;
-	}
-	
-	return 1;
-	
-}
-
-// =================== ham in khoang thoi gian ======================================
-void inKhoanThoiGian(Date ngayBatDau, Date ngayKetThuc) {
-	cout << endl << "===================== KHOANG THOI GIAN =========================" << endl;
-	cout << "Tu Ngay: " << ngayBatDau.ngay << "/" << ngayBatDau.thang << "/" << ngayBatDau.nam;
-	cout << " Den Ngay: " << ngayKetThuc.ngay << "/" << ngayKetThuc.thang << "/" << ngayKetThuc.nam << endl << endl;
 }
 
 void inThongTinHoaDon(NhanVien *nv, PTRHD hoaDon) {
@@ -1462,6 +1642,7 @@ void Menu() {
 	// khoi tao cac danh sach
 	DSNhanVien DSNV;
 	DSVatTu DSVT;
+	DSDoanhThu DSDT;
 	
 	// doc file
 	DocFileDSNV(DSNV);
@@ -1480,6 +1661,8 @@ void Menu() {
 		cout << "9. Lap hoa don" << endl;
 		cout << "10. In hoa don" << endl;
 		cout << "11. In hoa don trong khoang thoi gian" << endl;
+		cout << "12. Xoa nhan vien" << endl;
+		cout << "13. Thong ke 10 vat tu co doanh thu cao nhat" << endl;
 		cout << "0. Ket thuc chuong trinh" << endl;
 		
 		int luaChon;
@@ -1542,6 +1725,10 @@ void Menu() {
 			}
 			case 12: {
 				xoaNhanVien(DSNV);
+				break;
+			}
+			case 13: {
+				thongKeDoanhThu(DSNV, DSVT, DSDT);
 				break;
 			}
 			case 0: {
