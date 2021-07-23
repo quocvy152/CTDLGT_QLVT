@@ -820,11 +820,11 @@ void xoaKhungNhapXemHD() {
 
 void khungThongTinNV(string ho, string ten, string phai) {
 	TextColor(241);
-	gotoxy(60, 5);  cout << "                               ";  
-	gotoxy(60, 6);  cout << "      THONG TIN NHAN VIEN      ";
-	gotoxy(60, 7); cout << "     Ho va Ten: " << ho << " " << ten << "   ";
-	gotoxy(60, 8); cout << "     Gioi tinh: " << phai << "            ";
-	gotoxy(60, 9);  cout << "                               ";
+	gotoxy(60, 5);  cout << "                                ";  
+	gotoxy(60, 6);  cout << "      THONG TIN NHAN VIEN       ";
+	gotoxy(60, 7); cout << "     Ho va Ten: " << ho << " " << ten << "    ";
+	gotoxy(60, 8); cout << "     Gioi tinh: " << phai << "             ";
+	gotoxy(60, 9);  cout << "                                ";
 	TextColor(7);
 }
 
@@ -875,67 +875,96 @@ void KhungDKLTC() {
 	gotoxy(70, 10); cout << char(200);
 }
 
-void khungXuatCTHD() {
+void khungXuatCTHD(float tongCong) {
+	TextColor(241);
+	gotoxy(110, 12); cout << "                                     ";
+	gotoxy(110, 13); cout << "           CHI TIET HOA DON          ";
+	gotoxy(110, 14); cout << "                                     ";
+	TextColor(7);
+	
 	// ve cac duong ngang
-	for(int i = 52; i <= 180; i++) {
+	for(int i = 54; i <= 206; i++) {
+		gotoxy(i, 16); cout << char(205);
 		gotoxy(i, 18); cout << char(205);
-		gotoxy(i, 20); cout << char(205);
-		gotoxy(i, 37); cout << char(205);
+		gotoxy(i, 34); cout << char(205);
 	}
 	
-	for(int i = 18; i <= 37; i++) {
+	for(int i = 16; i <= 33; i++) {
 		 
 		// ve duong doc ben trai va phai
-		gotoxy(52, i); cout << char(186);
-		gotoxy(180, i); cout << char(186);
+		gotoxy(54, i); cout << char(186);
+		gotoxy(206, i); cout << char(186);
 		 
 		// ve doc xuong phan chia giua cac cot
-		gotoxy(58, i); cout << char(186);
-		gotoxy(68, i); cout << char(186);
-		gotoxy(80, i); cout << char(186);
-		gotoxy(128, i); cout << char(186);
-		gotoxy(140, i); cout << char(186);
+		gotoxy(61, i); cout << char(186);
+		gotoxy(85, i); cout << char(186);
+		gotoxy(130, i); cout << char(186);
 		gotoxy(149, i); cout << char(186);
-		gotoxy(157, i); cout << char(186);
 		gotoxy(168, i); cout << char(186);
-	}   
+		gotoxy(187, i); cout << char(186);
+	}  
 	
 	// ve cac goc vuong
-	gotoxy(180, 18); cout << char(187);
-	gotoxy(180, 20); cout << char(185);
-	gotoxy(180, 37); cout << char(188);
+	gotoxy(206, 16); cout << char(187);
+	gotoxy(206, 18); cout << char(185);
+	gotoxy(206, 34); cout << char(188);
+
+	gotoxy(54, 16); cout << char(201);
+	gotoxy(54, 18); cout << char(204);
+	gotoxy(54, 34); cout << char(200);
 	
-	gotoxy(52, 18); cout << char(201);
-	gotoxy(52, 20); cout << char(204);
-	gotoxy(52, 37); cout << char(200);
+	gotoxy(61, 18); cout << char(206);
+	gotoxy(85, 18); cout << char(206);
+	gotoxy(130, 18); cout << char(206);
+	gotoxy(149, 18); cout << char(206);
+	gotoxy(168, 18); cout << char(206);
+	gotoxy(187, 18); cout << char(206);
 	
-	gotoxy(58, 20); cout << char(206);
-	gotoxy(68, 20); cout << char(206);
-	gotoxy(80, 20); cout << char(206);
-	gotoxy(128, 20); cout << char(206); 
-	gotoxy(140, 20); cout << char(206); 
-	gotoxy(149, 20); cout << char(206);
-	gotoxy(157, 20); cout << char(206);
-	gotoxy(168, 20); cout << char(186);
+	gotoxy(61, 16); cout << char(203);
+	gotoxy(85, 16); cout << char(203);
+	gotoxy(130, 16); cout << char(203);
+	gotoxy(149, 16); cout << char(203);
+	gotoxy(168, 16); cout << char(203);
+	gotoxy(187, 16); cout << char(203);
 	
-	gotoxy(58, 18); cout << char(203); gotoxy(58, 37); cout << char(202);
-	gotoxy(68, 18); cout << char(203); gotoxy(68, 37); cout << char(202);
-	gotoxy(80, 18); cout << char(203); gotoxy(80, 37); cout << char(202);
-	gotoxy(128, 18); cout << char(203); gotoxy(128, 37); cout << char(202);
-	gotoxy(140, 18); cout << char(203); gotoxy(140, 37); cout << char(202);
-	gotoxy(149, 18); cout << char(203);	gotoxy(149, 37); cout << char(202);
-	gotoxy(157, 18); cout << char(203);	gotoxy(157, 37); cout << char(202);
-	gotoxy(168, 18); cout << char(203); gotoxy(168, 37); cout << char(202);
+	gotoxy(61, 34); cout << char(202);
+	gotoxy(85, 34); cout << char(202);
+	gotoxy(130, 34); cout << char(202);
+	gotoxy(149, 34); cout << char(202);
+	gotoxy(168, 34); cout << char(202);
+	gotoxy(187, 34); cout << char(202);
 	
-	gotoxy(54, 19); cout << "STT";
-	gotoxy(61, 19); cout << "MA VAT TU";
-	gotoxy(72, 19); cout << "MA MH";
-	gotoxy(99, 19); cout << "TEN VAT TU";
-	gotoxy(130, 19); cout << "SO LUONG";
-	gotoxy(143, 19); cout << "DON GIA";
-	gotoxy(150, 19); cout << "THUE VAT (%)";
-	gotoxy(158, 19); cout << "THUE VAT (VND)";
-	gotoxy(169, 19); cout << "SLOT TRONG";
+	gotoxy(56, 17); cout << "STT";
+	gotoxy(68, 17); cout << "MA VAT TU";
+	gotoxy(103, 17); cout << "TEN VAT TU";
+	gotoxy(134, 17); cout << "SO LUONG";
+	gotoxy(153, 17); cout << "DON GIA";
+	gotoxy(172, 17); cout << "THUE (%)";
+	gotoxy(191, 17); cout << "THANH TIEN";
+	
+	TextColor(160);
+	gotoxy(164, 36); cout << "TONG CONG HOA DON: " << tongCong;
+	TextColor(7);
+	
+	gotoxy(169, 39); TextColor(116); cout << "UP   :"; TextColor(12); cout <<" LEN";
+	gotoxy(169, 40); TextColor(116); cout << "LEFT :"; TextColor(12); cout << " TRAI";
+	gotoxy(169, 41); TextColor(116); cout << "RIGHT:"; TextColor(12); cout << " PHAI";
+	gotoxy(169, 42); TextColor(116); cout << "DOWN :"; TextColor(12); cout << " XUONG";
+	
+	gotoxy(67, 39); TextColor(116); cout << "ESC: "; 
+	gotoxy(74, 39); TextColor(12); cout << "Thoat xem chi tiet hoa don"; TextColor(7);
+}
+
+void xoaKhungXuatCTHD(){
+	for(int i = 15; i <= 39; i++) {
+		gotoxy(54, i); cout << "                                                                                                                                                         ";
+	}
+}
+
+void xoaTrangXuatCTHD(){
+	for(int i = 5; i <= 44; i++) {
+		gotoxy(54, i); cout << "                                                                                                                                                         ";
+	}
 }
 
 // khung xuat lop tin chi khong thoa dieu kien

@@ -1352,6 +1352,14 @@ bool ktTrungMaHD(DSNhanVien DSNV, string soHD) {
 	return false;
 }
 
+// luot qua hoa don cua mot nhan vien
+bool ktTrungMaHDTrongNV(PTRHD hoaDon, string soHD) {
+	for(PTRHD p = hoaDon; p != NULL; p = p->pNext)
+		if (p->info.soHD == soHD)
+			return true;
+	return false;
+}
+
 string taoMaHD(DSNhanVien DSNV) {
 	string tempSoHD = "HD00000000";
 	do {
@@ -1693,64 +1701,74 @@ void inDSHDMotNhanVien(DSNhanVien &DSNV, int vtNV) {
 }
 
 void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
-	for(PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) 
-	{
+	PTRHD p;
+	for(p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) 
 		if (p->info.soHD == soHD) 
-		{
-			if(p->info.dsChiTietHoaDon.sl == 0)
-			{
-				cout << "HOA DON KHONG CO VAT TU NAO!" << endl;
-				break;
+			break;
+	
+	if(p->info.dsChiTietHoaDon.sl == 0)
+	{
+		TextColor(79);
+		gotoxy(110, 16); cout << "HOA DON KHONG CO VAT TU NAO!" << endl;
+		TextColor(7);
+	}
+	else
+	{
+		TextColor(241);
+		gotoxy(60, 10); cout << "      THONG TIN HOA DON         ";
+		gotoxy(60, 11); cout << "     So Hoa Don : " << p->info.soHD << "    ";
+		gotoxy(60, 12); cout << "     Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << "     ";
+		gotoxy(60, 13); cout << "     Loai       : " << tenLoaiHD(p->info.loai) << "          ";
+		gotoxy(60, 14);  cout << "                                ";
+		TextColor(7);
+		
+		float tongCong = tinhTriGiaHD(p->info.dsChiTietHoaDon);
+		
+		int trang = 0, tongTrang;
+		int key;
+		
+		while(1) {
+			if(p->info.dsChiTietHoaDon.sl < 15) {
+				trang = 0;
+				tongTrang = 1;
+			} else {
+				tongTrang = (p->info.dsChiTietHoaDon.sl - 1) / 15 + 1;
 			}
-			else
+			
+			int hang = 0; int stt = 0;
+			 
+			xoaKhungXuatCTHD(); khungXuatCTHD(tongCong);
+			for(int i = trang * 15; i < 15 + trang * 15 && i < p->info.dsChiTietHoaDon.sl; i++)
 			{
-				TextColor(241);
-				gotoxy(60, 10); cout << "      THONG TIN HOA DON        ";
-				gotoxy(60, 11); cout << "     So Hoa Don : " << p->info.soHD << "   ";
-				gotoxy(60, 12); cout << "     Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << "    ";
-				gotoxy(60, 13); cout << "     Loai       : " << tenLoaiHD(p->info.loai) << "         ";
-				gotoxy(60, 14);  cout << "                               ";
-				TextColor(7);
+				stt = i + 1;
+				gotoxy(56, 19 + hang); cout << stt;
+				gotoxy(67, 19 + hang); cout << p->info.dsChiTietHoaDon.ds[i].maVT;
 				
-				int trang = 0, tongTrang;
-				int key;
+				// lay ra ten vat tu de hien thi dua vao ma vat tu cua CTHD
+				TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[i].maVT);
+				gotoxy(89, 19 + hang); cout << TREE_VT->info.tenVT;
+				gotoxy(134, 19 + hang); cout << p->info.dsChiTietHoaDon.ds[i].soLuong;
+				gotoxy(152, 19 + hang); cout << p->info.dsChiTietHoaDon.ds[i].donGia;
+				gotoxy(173, 19 + hang); cout << p->info.dsChiTietHoaDon.ds[i].VAT;
 				
-				while(1) {
-					if(p->info.dsChiTietHoaDon.sl < 15) {
-						tongTrang = 1;
-					} else {
-						tongTrang = (p->info.dsChiTietHoaDon.sl - 1) / 15 + 1;
-					}
-					
-					int hang = 0; int stt = 0;
-					
-					//xoaKhungXuatCTHD(); 
-					khungXuatCTHD();
-					for(int i = trang * 15; i < 15 + trang * 15; i++)
-					{
-						cout << "Ma Vat Tu : " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
-						
-						// lay ra ten vat tu de hien thi dua vao ma vat tu cua CTHD
-						TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[i].maVT);
-						cout << "Ten Vat Tu: " << TREE_VT->info.tenVT << endl;
-						
-						cout << "So Luong  : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
-						cout << "Don Gia   : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
-						cout << "VAT       : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
-						
-						float thanhTien = tinhThanhTienCTHD(p->info.dsChiTietHoaDon.ds[i]);
-						cout << setprecision(12);
-						cout << "Thanh tien: " << thanhTien << endl;
-					}
-				
-					float tongCong = tinhTriGiaHD(p->info.dsChiTietHoaDon);
-					cout << "TONG TIEN HOA DON: " << tongCong << endl;
-					getch();
-					break;
-				}
-				
+				float thanhTien = tinhThanhTienCTHD(p->info.dsChiTietHoaDon.ds[i]);
+				cout << setprecision(19);
+				gotoxy(189, 19 + hang); cout << thanhTien;
+				hang++;
+			}
+			
+			hienThiTrang(trang + 1, tongTrang, 175, 37);
+			key = getKey();
+			if((key == RIGHT || key == DOWN) && trang < tongTrang - 1) 
+				trang++;
+			if((key == LEFT || key == UP) && trang > 0)
+				trang--;
+			if(key == ESC) {
+				xoaTrangXuatCTHD();
+				return;	
 			}
 		}
+		
 	}
 }
 
@@ -1808,10 +1826,10 @@ NhapSoHD:
 			return;
 		}
 		
-		bool tonTaiSoHD = ktTrungMaHD(DSNV, soHD);
+		bool tonTaiSoHD = ktTrungMaHDTrongNV(DSNV.nv[vtNV]->DSHD.FirstHD, soHD);
 		if(!tonTaiSoHD) 
 		{
-			cout  << "SO HOA DON KHONG TON TAI!" << endl;
+			THONG_BAO("SO HOA DON KHONG TON TAI TRONG NHAN VIEN NAY!", 90, 40, 79);
 			noiDungHDCu = soHD;
 			goto NhapSoHD;
 		}
