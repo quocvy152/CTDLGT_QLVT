@@ -54,24 +54,24 @@ void ChuanHoaChu(string &a)
 }
 
 // ------------------------------- bien doi thanh chu hoa ----------------------------
-string BoKhoangTrang(string &a) {
-	// N 18 D C C    N  -> N18DCCN
-	// xoa khoang trang dau
-	while(a[0] == ' ') {
-		a.erase(a.begin() + 0);
-	}
-	// xoa khoang trang cuoi
-	while(a[a.length() - 1] == ' ') {
-		a.erase(a.begin() + a.length() - 1);
-	}
-	for(int i = 0; i < a.length(); i++) {
-		if(a[i] == ' ') {
-			a.erase(a.begin() + i);
-			i--;
-		}
-	}
-	return a;
-}
+//string BoKhoangTrang(string &a) {
+//	// N 18 D C C    N  -> N18DCCN
+//	// xoa khoang trang dau
+//	while(a[0] == ' ') {
+//		a.erase(a.begin() + 0);
+//	}
+//	// xoa khoang trang cuoi
+//	while(a[a.length() - 1] == ' ') {
+//		a.erase(a.begin() + a.length() - 1);
+//	}
+//	for(int i = 0; i < a.length(); i++) {
+//		if(a[i] == ' ') {
+//			a.erase(a.begin() + i);
+//			i--;
+//		}
+//	}
+//	return a;
+//}
 
 // ham thong bao
 void THONG_BAO(string text, int x, int y, int color) {
@@ -120,9 +120,14 @@ int getKey() {
  * 2: nhan vao so
  * 3: nhan vao chu va khoang trang 
  */
-string nhapLieu(int loai) {
+string nhapLieu(int loai, string noiDungCu) {
 	string str;
 	char c;
+	
+	if(noiDungCu.compare("") != 0) {
+		str = noiDungCu;
+		cout << str;
+	}
 	
 laChuoiRong:
 	c = getch();
@@ -177,6 +182,20 @@ laChuoiRong:
 			c = getch();
 		}
 		
+		else if(loai == 3)
+		{
+			// nhan chu
+			if(laKiTuInHoa(c) || laKiTuSo(c)) {
+				cout << c;
+				str.push_back(c);
+			} else if (c >= 'a' && c <= 'z') {
+				c = c - 32;
+				cout << c;
+				str.push_back(c);
+			}
+			c = getch();
+		}
+		
 		if(int(c) == ESC) {
 			return "-1";
 		}
@@ -197,7 +216,7 @@ int nhapSoNguyen() {
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
-	// vòng lap vo tan cho den khi bam ENTER
+	// vï¿½ng lap vo tan cho den khi bam ENTER
 	while ((int)c != ENTER) {
 		if (int(c) == BACKSPACE) {
 			// neu do dai chuoi bang ko thi khong xoa tiep
@@ -235,7 +254,7 @@ float nhapSoPhay() {
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
-	// vòng lap vo tan cho den khi bam ENTER
+	// vï¿½ng lap vo tan cho den khi bam ENTER
 	while ((int)c != ENTER) {
 		if (int(c) == BACKSPACE) {
 			// neu do dai chuoi bang ko thi khong xoa tiep
@@ -434,6 +453,7 @@ struct VatTu {
 	string maVT;
 	string tenVT;
 	string dvt;
+	bool trangThaiLap = false;
 	float slTon;
 };
 struct nodeVatTu {
@@ -478,11 +498,10 @@ char MENU_NHAN_VIEN[4][40] = {
 };
 
 // menu hoa don
-char MENU_HOA_DON[4][40] = {
+char MENU_HOA_DON[3][40] = {
 	"   LAP HOA DON                   ",
 	"   XUAT HOA DON                  ",
-	"   XUAT HOA DON THEO THOI GIAN   ",
-	"   HIEU CHINH NHAN VIEN          ",
+	"   XUAT HOA DON THEO THOI GIAN   "
 };
 
 // ====================================================================================
@@ -717,6 +736,7 @@ void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int &nVTChay) {
 		outFile << TREE_VT->info.maVT << ",";
 		outFile << TREE_VT->info.tenVT << ",";
 		outFile << TREE_VT->info.slTon << ",";
+		outFile << TREE_VT->info.trangThaiLap << ",";
 		
 		// dang ghi toi cuoi file, loai bo ghi xuong dong
 		if(nVTChay == nVT)
@@ -857,8 +877,8 @@ void nhapVatTu(DSVatTu &DSVT){
 	cin.ignore();
 	p->info.maVT = taoMaVT(DSVT.TREE_VT);
 	cout << "Ma vat tu: " << p->info.maVT << endl;
-	cout << "Nhap ten vat tu: "; p->info.tenVT = nhapLieu(1);
-	cout << "Nhap don vi tinh: "; p->info.dvt = nhapLieu(1);
+	cout << "Nhap ten vat tu: "; p->info.tenVT = nhapLieu(1, "");
+	cout << "Nhap don vi tinh: "; p->info.dvt = nhapLieu(1, "");
 	cout << "Nhap so luong ton: "; p->info.slTon = nhapSoPhay();
 	
 	ChuanHoaChu(p->info.tenVT);
@@ -871,12 +891,48 @@ void nhapVatTu(DSVatTu &DSVT){
 }
 
 void xuatDanhSachVT(VatTu *vt[], int nVT){
-	for(int i = 0; i < nVT; i++) {
-		cout << "------------ VAT TU " << i + 1 << " --------------" << endl;
-		cout << "Ma vat tu: " << vt[i]->maVT << endl;
-		cout << "Ten vat tu: " << vt[i]->tenVT << endl;
-		cout << "Don vi tinh: " << vt[i]->dvt << endl;
-		cout << "So luong ton: " << vt[i]->slTon << endl << endl;
+	int key;
+	int trang = 0; int tongTrang = 0;
+	int hang;
+	
+	// sap xep vat tu tang dan theo ho ten
+	sapXepVT(vt, nVT);
+	
+	
+	while(1) {
+		if(nVT == 0) {
+			THONG_BAO("DANH SACH VAT TU RONG!", 80, 40, 79);
+		} else {
+			if(nVT < 15) {
+				//trang = 0;
+				tongTrang = 1;
+			} else {
+				tongTrang = (nVT - 1) / 15 + 1;
+			}
+		}
+		
+		int stt = 0; hang = 0;
+		xoaKhungDSVT(); khungXuatDSVT();
+		for(int i = trang * 15; i < 15 + trang * 15 && i < nVT; i++) {
+			stt = i + 1;
+			gotoxy(81, 12 + hang); cout << stt;
+			gotoxy(91, 12 + hang); cout << vt[i]->maVT << endl;
+			gotoxy(113, 12 + hang); cout << vt[i]->tenVT << endl;
+			gotoxy(157, 12 + hang); cout << vt[i]->dvt << endl;
+			gotoxy(168, 12 + hang); cout << vt[i]->slTon << endl << endl;
+			hang++;
+		}
+		hienThiTrang(trang + 1, tongTrang, 172, 29);
+		key = getKey();
+		if((key == RIGHT || key == DOWN) && trang < tongTrang - 1) 
+			trang++;
+		if((key == LEFT || key == UP) && trang > 0)
+			trang--;
+		if(key == ESC) {
+			xoaKhungDSVT();
+			return;
+		}
+			
 	}
 }
 
@@ -891,21 +947,21 @@ void giaiPhongDSVatTu(VatTu *vt[], int nVT) {
  * 1: vat tu do da lap choi tiet hoa don
  * 0: vat tu do chua lap chi tiet hoa don
  */
-int vatTuDaLapCTHD(DSNhanVien &DSNV, string maVT) {
-	if(DSNV.sl == 0) {
-		return 2;
-	}
-	
-	for(int i = 0; i < DSNV.sl; i++) {
-		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) {
-			for(int i = 0; i < p->info.dsChiTietHoaDon.sl; i++) {
-				if(maVT.compare(p->info.dsChiTietHoaDon.ds[i].maVT) == 0) 
-					return 1;
-			}
-		}
-	}
-	return 0;
-}
+//int vatTuDaLapCTHD(DSNhanVien &DSNV, string maVT) {
+//	if(DSNV.sl == 0) {
+//		return 2;
+//	}
+//	
+//	for(int i = 0; i < DSNV.sl; i++) {
+//		for(PTRHD p = DSNV.nv[i]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+//			for(int i = 0; i < p->info.dsChiTietHoaDon.sl; i++) {
+//				if(maVT.compare(p->info.dsChiTietHoaDon.ds[i].maVT) == 0) 
+//					return 1;
+//			}
+//		}
+//	}
+//	return 0;
+//}
 
 void nodeTheMang(TREE TREE_VT, nodeVatTu *&x) {
 	if(TREE_VT->pLeft != NULL) {
@@ -946,7 +1002,7 @@ void xoaVatTu(DSNhanVien &DSNV, DSVatTu &DSVT) {
 	string maVT;
 	cout << "Nhap ma Vat Tu: ";
 	cin.ignore();
-	maVT = nhapLieu(1);
+	maVT = nhapLieu(1, "");
 	
 	TREE TREE_VT = timNodeVT(DSVT.TREE_VT, maVT);
  	if(!TREE_VT) 
@@ -961,28 +1017,17 @@ void xoaVatTu(DSNhanVien &DSNV, DSVatTu &DSVT) {
 			getch();
 			return;
 		}
-		
-		int daLapCTHD = vatTuDaLapCTHD(DSNV, maVT);
-		if(daLapCTHD == 2) 
-		{
-			cout << "DANH SACH NHAN VIEN RONG! KHONG THE XOA VAT TU!" << endl;
-			getch();
-			return;
-		}
 			
-		if(daLapCTHD == 1)
+		if(TREE_VT->info.trangThaiLap == true)
 		{
 			cout << "VAT TU DA LAP CHI TIET HOA DON! KHONG THE XOA VAT TU!" << endl;
 			getch();
 			return;
 		}
 		
-		if(daLapCTHD == 0)
-		{
-			xoaMotVatTu(DSVT.TREE_VT, maVT);
-			DSVT.sl--;
-			cout << "XOA THANH CONG!" << endl;
-		}
+		xoaMotVatTu(DSVT.TREE_VT, maVT);
+		DSVT.sl--;
+		cout << "XOA THANH CONG!" << endl;
 	}
 	getch();
 }
@@ -993,9 +1038,9 @@ void hieuChinhMotVatTu(TREE &TREE_VT, string maVT) {
 			
 			cin.ignore();
 			cout << "Nhap ten vat tu hieu chinh: ";
-			TREE_VT->info.tenVT = nhapLieu(1);
+			TREE_VT->info.tenVT = nhapLieu(1, "");
 			cout << "Nhap don vi tinh vat tu hieu chinh: ";
-			TREE_VT->info.dvt = nhapLieu(1);;
+			TREE_VT->info.dvt = nhapLieu(1, "");;
 			
 			ChuanHoaChu(TREE_VT->info.tenVT);
 			ChuanHoaChu(TREE_VT->info.dvt);
@@ -1012,7 +1057,7 @@ void hieuChinhVatTu(DSVatTu &DSVT) {
 	string maVT;
 	cin.ignore();
 	cout << "Nhap ma vat tu can hieu chinh: ";
-	maVT = nhapLieu(1);
+	maVT = nhapLieu(1, "");
 	bool trungMaVT = kiemTraTrungMaVT(DSVT.TREE_VT, maVT);
 	if(trungMaVT)
 		hieuChinhMotVatTu(DSVT.TREE_VT, maVT);
@@ -1063,11 +1108,11 @@ int nhapNhanVien(DSNhanVien &DSNV) {
 		cout << "Ma nhan vien: " << p->maNV << endl;
 		cin.ignore();
 		cout << "Nhap ho nhan vien:  ";
-		p->ho = nhapLieu(2);
+		p->ho = nhapLieu(2, "");
 		cout << "Nhap ten nhan vien:  ";
-		gp->ten = nhapLieu(2);
+		p->ten = nhapLieu(2, "");
 		cout << "Nhap gioi tinh nhan vien:  ";
-		p->phai = nhapLieu(2);
+		p->phai = nhapLieu(2, "");
 		
 		ChuanHoaChu(p->ho);
 		ChuanHoaChu(p->ten);
@@ -1130,13 +1175,43 @@ void xuatDSNV(DSNhanVien &DSNV) {
 		return;
 	}
 	
-	for(int i = 0; i < DSNV.sl; i++) {
-		cout << endl << "------------------- NHAN VIEN " << i + 1 << "-------------------" << endl;
-		cout << "Ma nhan vien: " << DSNV.nv[i]->maNV << endl;
-		cout << "Ho nhan vien: " << DSNV.nv[i]->ho << endl;
-		cout << "Ten nhan vien: " << DSNV.nv[i]->ten << endl;
-		cout << "Gioi tinh nhan vien: " << DSNV.nv[i]->phai << endl << endl;
+	int key;
+	int hang = 0;
+	int trang = 0; int tongTrang = 0;
+	sapXepNhanVien(DSNV);
+	
+	while(1) {
+		if(DSNV.sl < 15) {
+			trang = 0; 
+			tongTrang = 1;
+		} else {
+			tongTrang = (DSNV.sl - 1) / 15 + 1;
+		}
+		
+		xoaKhungDSNV(); khungXuatDSNV();
+		int stt = 0; hang = 0;
+		for(int i = trang * 15; i < 15 + trang * 15 && i < DSNV.sl; i++) {
+			stt += 1;
+			gotoxy(87, 12 + hang); cout << stt; 
+			gotoxy(96, 12 + hang); cout << DSNV.nv[i]->maNV;
+			gotoxy(120, 12 + hang); cout << DSNV.nv[i]->ho;
+			gotoxy(150, 12 + hang); cout << DSNV.nv[i]->ten;
+			gotoxy(169, 12 + hang); cout << DSNV.nv[i]->phai;
+			hang++;
+		}
+		hienThiTrang(trang + 1, tongTrang, 158, 29);
+		key = getKey();
+		if((key == RIGHT || key == DOWN) && trang < tongTrang - 1) 
+			trang++;
+		if((key == LEFT || key == UP) && trang > 0)
+			trang--;
+		if(key == ESC) {
+			xoaKhungDSNV();
+			return;	
+		}
 	}
+	
+	
 }
 
 //----------------------------- hieu chinh nhan vien ------------------------------------
@@ -1149,7 +1224,7 @@ void hieuChinhNhanVien(DSNhanVien &DSNV)
 NhapLai:
 	string maNVKT;
 	cout << "Nhap ma nhan vien can hieu chinh: ";
-	maNVKT = nhapLieu(1);
+	maNVKT = nhapLieu(1, "");
 	int vt = kiemTraMaNV(DSNV, maNVKT);
 	if (vt < 0) {
 		cout << "NHAN VIEN KHONG TON TAI!! " << endl;
@@ -1161,9 +1236,9 @@ NhapLai:
 		cout << "Ten nhan vien      : " << DSNV.nv[vt]->ten << endl;
 		cout << "Gioi tinh nhan vien: " << DSNV.nv[vt]->phai << endl;
 		
-		cout << "Ho nhan vien cap nhat  	 : "; hoCN = nhapLieu(2);
-		cout << "Ten nhan vien cap nhat      : "; tenCN = nhapLieu(2);
-		cout << "Gioi tinh nhan vien cap nhat: "; gtCN = nhapLieu(2);
+		cout << "Ho nhan vien cap nhat  	 : "; hoCN = nhapLieu(2, "");
+		cout << "Ten nhan vien cap nhat      : "; tenCN = nhapLieu(2, "");
+		cout << "Gioi tinh nhan vien cap nhat: "; gtCN = nhapLieu(2, "");
 		
 		DSNV.nv[vt]->ho = hoCN;
 		DSNV.nv[vt]->ten = tenCN;
@@ -1195,7 +1270,7 @@ void xoaNhanVien(DSNhanVien &DSNV) {
 NhapMaNV:
 	cout << "Nhap ma nhan vien can xoa: ";
 	cin.ignore();
-	maNV = nhapLieu(1);
+	maNV = nhapLieu(1, "");
 	
 	if(DSNV.sl == 0) 
 	{
@@ -1329,7 +1404,7 @@ void lapHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT)
 	string maNV;
 	cin.ignore();
 	cout << "Nhap ma nhan vien lap hoa don: ";
-	maNV = nhapLieu(1);
+	maNV = nhapLieu(1, "");
 	int vtNVLap = kiemTraMaNV(DSNV, maNV);
 	
 	// neu ma nhan vien khong ton tai
@@ -1400,7 +1475,7 @@ void lapHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT)
 NhapCTHDNhap:
 			cin.ignore();
 			cout << "Nhap ma vat tu: ";
-			CTHD.maVT = nhapLieu(1);
+			CTHD.maVT = nhapLieu(1, "");
 			
 			TREE tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
 			
@@ -1426,6 +1501,7 @@ NhapCTHDNhap:
 					float slTonBanDau = tree->info.slTon;
 					float slNhapThem = CTHD.soLuong;
 					tree->info.slTon = slTonBanDau + slNhapThem;
+					tree->info.trangThaiLap = true;
 					
 					cout << "THEM CHI TIET HOA DON THANH CONG! BAN CO MUON TIEP TUC NHAP CHI TIET HOA DON?" << endl;
 					
@@ -1466,7 +1542,7 @@ NhapCTHDNhap:
 NhapCTHDXuat:
 			cin.ignore();
 			cout << "Nhap ma vat tu: ";
-			CTHD.maVT = nhapLieu(1);
+			CTHD.maVT = nhapLieu(1, "");
 			
 			TREE tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
 			
@@ -1512,6 +1588,7 @@ NhapCTHDXuat:
 					else 
 					{
 						tree->info.slTon = slTonBanDau - slXuatRa;
+						tree->info.trangThaiLap = true;
 						
 						cout << "THEM CHI TIET HOA DON THANH CONG! BAN CO MUON TIEP TUC NHAP CHI TIET HOA DON?" << endl;
 					
@@ -1560,24 +1637,59 @@ float tinhTriGiaHD(DSChiTietHoaDon &DSCTHD) {
 	return tongCong;
 }
 
+string tenLoaiHD(string loai) {
+	if(loai == "X")
+		return "XUAT";
+	else return "NHAP";
+}
+
 // ===================== xuat danh sach hoa don cua 1 nhan vien =======================
-int inDSHDMotNhanVien(DSNhanVien DSNV, int vtNV) {
-	if(DSNV.nv[vtNV]->DSHD.FirstHD == NULL) {
-		cout << "NHAN VIEN CHUA LAP HOA DON" << endl;
-		getch();
-		return 0;
-	}
+void inDSHDMotNhanVien(DSNhanVien &DSNV, int vtNV) {
+	xoaKhungNhapXemHD();
+	int trang = 0, tongTrang;
+	int key;
 	
-	cout << endl << "TONG SO HOA DON CUA NHAN VIEN: " << DSNV.nv[vtNV]->DSHD.sl << endl;
-	int stt = 0;
- 	for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
- 		cout << "========================== HOA DON " << ++stt << "==========================" << endl;
-		cout << "So Hoa Don      : " << p->info.soHD << endl;
-		cout << "Ngay Lap Hoa Don: " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
-		cout << "Loai Hoa Don    : " << p->info.loai << endl;
+	while(1) {
+		if(DSNV.sl < 15) {
+			tongTrang = 1;
+		} else {
+			tongTrang = (DSNV.sl - 1) / 15 + 1;
+		}
+		
+		int hang = 0; int stt = 0;
+		// dua vao bien duyet de biet in ra tu phan tu nao
+		int bienDuyet = 0;
+		// tao ra 2 gioi han duyet de biet in ra tu phan tu nao
+		int gioiHanDuyetPhai = trang * 15 + 15; int gioiHanDuyetTrai = trang * 15;
+		
+		xoaKhungDSHD(); khungXuatDSHD();
+	 	for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+			if(bienDuyet >= gioiHanDuyetTrai && bienDuyet < gioiHanDuyetPhai) {
+				stt += 1;
+				gotoxy(81, 12 + hang); cout << stt;
+				gotoxy(91, 12 + hang); cout << p->info.soHD << endl;
+				gotoxy(113, 12 + hang); cout << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
+				gotoxy(157, 12 + hang); cout << tenLoaiHD(p->info.loai) << endl;
+				hang++;
+				bienDuyet += 1;
+			} else {
+				bienDuyet += 1;
+				stt += 1;
+			}
+		}
+		
+		hienThiTrang(trang + 1, tongTrang, 158, 29);
+		key = getKey();
+		if((key == RIGHT || key == DOWN) && trang < tongTrang - 1) 
+			trang++;
+		if((key == LEFT || key == UP) && trang > 0)
+			trang--;
+		if(key == ESC) {
+			xoaKhungDSHD();
+			xoaKhungNhapXemHD();
+			return;	
+		}
 	}
-	getch();
-	return 1;
 }
 
 void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
@@ -1592,80 +1704,121 @@ void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 			}
 			else
 			{
-				cout << "************ THONG TIN HOA DON ************" << endl;
-				cout << "So Hoa Don : " << p->info.soHD << endl;
-				cout << "Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
-				cout << "Loai       : " << p->info.loai << endl;
+				TextColor(241);
+				gotoxy(60, 10); cout << "      THONG TIN HOA DON        ";
+				gotoxy(60, 11); cout << "     So Hoa Don : " << p->info.soHD << "   ";
+				gotoxy(60, 12); cout << "     Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << "    ";
+				gotoxy(60, 13); cout << "     Loai       : " << tenLoaiHD(p->info.loai) << "         ";
+				gotoxy(60, 14);  cout << "                               ";
+				TextColor(7);
 				
-				for(int i = 0 ; i < p->info.dsChiTietHoaDon.sl ; i++)
-				{
-					cout << "  ============================ CHI TIET VAT TU " << i + 1 << "============================  " << endl;
-					cout << "Ma Vat Tu : " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
+				int trang = 0, tongTrang;
+				int key;
+				
+				while(1) {
+					if(p->info.dsChiTietHoaDon.sl < 15) {
+						tongTrang = 1;
+					} else {
+						tongTrang = (p->info.dsChiTietHoaDon.sl - 1) / 15 + 1;
+					}
 					
-					// lay ra ten vat tu de hien thi dua vao ma vat tu cua CTHD
-					TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[i].maVT);
-					cout << "Ten Vat Tu: " << TREE_VT->info.tenVT << endl;
+					int hang = 0; int stt = 0;
 					
-					cout << "So Luong  : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
-					cout << "Don Gia   : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
-					cout << "VAT       : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
-					
-					float thanhTien = tinhThanhTienCTHD(p->info.dsChiTietHoaDon.ds[i]);
-					cout << setprecision(12);
-					cout << "Thanh tien: " << thanhTien << endl;
+					//xoaKhungXuatCTHD(); 
+					khungXuatCTHD();
+					for(int i = trang * 15; i < 15 + trang * 15; i++)
+					{
+						cout << "Ma Vat Tu : " << p->info.dsChiTietHoaDon.ds[i].maVT << endl;
+						
+						// lay ra ten vat tu de hien thi dua vao ma vat tu cua CTHD
+						TREE TREE_VT = timNodeVT(DSVT.TREE_VT, p->info.dsChiTietHoaDon.ds[i].maVT);
+						cout << "Ten Vat Tu: " << TREE_VT->info.tenVT << endl;
+						
+						cout << "So Luong  : " << p->info.dsChiTietHoaDon.ds[i].soLuong << endl;
+						cout << "Don Gia   : " << p->info.dsChiTietHoaDon.ds[i].donGia << endl;
+						cout << "VAT       : " << p->info.dsChiTietHoaDon.ds[i].VAT << endl;
+						
+						float thanhTien = tinhThanhTienCTHD(p->info.dsChiTietHoaDon.ds[i]);
+						cout << setprecision(12);
+						cout << "Thanh tien: " << thanhTien << endl;
+					}
+				
+					float tongCong = tinhTriGiaHD(p->info.dsChiTietHoaDon);
+					cout << "TONG TIEN HOA DON: " << tongCong << endl;
+					getch();
+					break;
 				}
 				
-				float tongCong = tinhTriGiaHD(p->info.dsChiTietHoaDon);
-				cout << "TONG TIEN HOA DON: " << tongCong << endl;
-				getch();
-				break;
 			}
 		}
+	}
+}
+
+// =========== ham chuyen danh sach hao don thanh mang de giup cho viec xuat ==========
+void chuyenDSHDSangMang(DSNhanVien &DSNV, int vtNV, HoaDon *hd, int &nHD) {
+	for(PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+		hd[nHD] = p->info;
+		nHD++;
 	}
 }
 
 // ================================= xuat hoa don =====================================
 void inHoaDon(DSNhanVien &DSNV, DSVatTu &DSVT) 
 {
+	string noiDungCu = "";
 	string soHD, maNV;
 NhapLai:
-	cin.ignore();
-	cout << "Nhap Ma Nhan Vien Can Xem Hoa Don: ";
-	maNV = nhapLieu(1);
+	khungNhapXemHD();
+	gotoxy(72, 12); cout << "Nhap Ma Nhan Vien Xem Hoa Don: ";
+	maNV = nhapLieu(3, noiDungCu);
+	if(maNV == "-1") {
+		THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79);
+		xoaKhungNhapXemHD();
+		return;
+	}	
 	
 	int vtNV = kiemTraMaNV(DSNV, maNV);
 	
 	if(vtNV == -1) 
 	{
-		cout << "MA NHAN VIEN KHONG TON TAI!" << endl;
-		getch();
+		THONG_BAO("MA NHAN VIEN KHONG TON TAI!", 90, 40, 79);
+		noiDungCu = maNV;
 		goto NhapLai;
 	}
 	else 
 	{
+		if(DSNV.nv[vtNV]->DSHD.FirstHD == NULL) {
+			THONG_BAO("NHAN VIEN CHUA LAP HOA DON" , 90, 40, 79);
+			noiDungCu = maNV;
+			goto NhapLai;
+		}
+		
 		// in ra danh sach hoa don cua nhan vien
 		// 0: nhan vien chua co hoa don, 1: nhan vien co hoa don
-		int nhanVienCoHD = inDSHDMotNhanVien(DSNV, vtNV);
-		if(!nhanVienCoHD)
-			return;
+		inDSHDMotNhanVien(DSNV, vtNV);
 		
-NhapSoHD:		
-		cin.ignore();
-		cout << "Nhap So Hoa Don Can Xem: ";
-		soHD = nhapLieu(1);
+		string noiDungHDCu = "";
+NhapSoHD:
+		khungNhapXemHD();
+		gotoxy(72, 13); cout << "Nhap So Hoa Don Muon Xem: ";
+		soHD = nhapLieu(1, noiDungHDCu);
+		if(soHD == "-1") {
+			THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79);
+			xoaKhungNhapXemHD();
+			return;
+		}
 		
 		bool tonTaiSoHD = ktTrungMaHD(DSNV, soHD);
 		if(!tonTaiSoHD) 
 		{
 			cout  << "SO HOA DON KHONG TON TAI!" << endl;
-			getch();
+			noiDungHDCu = soHD;
 			goto NhapSoHD;
 		}
 		else 
 		{
-			cout << "***** THONG TIN NHAN VIEN LAP HOA DON *****" << endl;
-			cout << "Ho va Ten  : " << DSNV.nv[vtNV]->ho  << " " << DSNV.nv[vtNV]->ten << endl;
-			cout << "Gioi tinh  : " << DSNV.nv[vtNV]->phai << endl;
+			xoaKhungNhapXemHD();
+			khungThongTinNV(DSNV.nv[vtNV]->ho, DSNV.nv[vtNV]->ten, DSNV.nv[vtNV]->phai);
 			
 			inChiTietHD(DSNV, vtNV, soHD, DSVT);
 		}
@@ -1806,7 +1959,6 @@ void DocFileDSNV(DSNhanVien &DSNV)
 		
 		themMotNV(DSNV, nv);
 	}
-	
 	inFile.close();
 }
 
@@ -1823,12 +1975,15 @@ void DocFileDSVT(DSVatTu &DSVT)
 	
 	inFile >> DSVT.sl;
 	inFile.ignore();
+	
 	while(!inFile.eof())
 	{
 		TREE vt = KhoiTaoNodeVT();
 		getline(inFile, vt->info.maVT, ',');
 		getline(inFile, vt->info.tenVT, ',');
 		inFile >> vt->info.slTon; 
+		inFile.ignore();
+		inFile >> vt->info.trangThaiLap; 
 		inFile.ignore();
 		getline(inFile, vt->info.dvt, '\n');
 		
@@ -1865,6 +2020,66 @@ void GIAI_PHONG_BO_NHO(DSVatTu &DSVT, DSNhanVien &DSNV) {
 	GIAI_PHONG_NHAN_VIEN_HD(DSNV);
 }
 
+// ---------------------------------------- menu dong ------------------------------------
+int MenuDong(char MenuChinh[][40], int item) {
+	int row;
+	// dang o vi tri nao cua menu
+	int thaotac = 0;
+	int mau[5];
+	for(int i = 0; i < item; i++)
+		mau[i] = 7;
+	mau[0] = 225;
+	
+	TextColor(228);
+	gotoxy(19, 22); cout << "    MENU    ";
+	khungHuongDan();
+	xuatTenDeTai();
+	khungGiaoDien();
+	xoaMenu();
+	// vong while lap vo han cho toi khi tra ve cai gi do
+	while (1) {
+		for (int i = 0; i < item; i++)
+		{
+			TextColor(mau[i]);
+			gotoxy(10, 25 + i); cout << "   " << MenuChinh[i] << "   ";
+		}
+		int key = getKey();
+		switch (key)
+		{
+			case UP:
+			case LEFT:
+			{
+				if (thaotac == 0)
+					thaotac = item - 1;
+				else
+					thaotac--;
+				break;
+			}
+			case DOWN:
+			case RIGHT:
+			{
+				if (thaotac == item - 1)
+					thaotac = 0;
+				else
+					thaotac++;
+				break;
+			}
+			case ESC:
+			{
+				TextColor(7);
+				return thaotac = 27;
+			}
+			case ENTER:
+			{
+				return thaotac + 1;
+			}
+		}
+		for (int i = 0; i < item; i++)
+			mau[i] = 7;
+		mau[thaotac] = 225;
+	}
+	
+}
 
 //================================ MENNU TINH =========================================
 void Menu() {
@@ -1877,99 +2092,105 @@ void Menu() {
 	DocFileDSNV(DSNV);
 	DocFileDSVT(DSVT);
 	
-	bool checkStop = true;
-	while(checkStop) {
-		system("cls");
-		cout << "1. Them vat tu " << endl;
-		cout << "2. Xoa vat tu" << endl;
-		cout << "3. Hieu chinh vat tu" << endl;
-		cout << "4. Xuat danh sach vat tu" << endl;
-		cout << "5. Them nhan vien" << endl;
-		cout << "6. Hieu chinh nhan vien" << endl;
-		cout << "7. Xuat danh sach nhan vien" << endl;
-		cout << "9. Lap hoa don" << endl;
-		cout << "10. In hoa don" << endl;
-		cout << "11. In hoa don trong khoang thoi gian" << endl;
-		cout << "12. Xoa nhan vien" << endl;
-		cout << "13. Thong ke 10 vat tu co doanh thu cao nhat" << endl;
-		cout << "0. Ket thuc chuong trinh" << endl;
+	while(1) {
+		clrscr();
+		int tungDo = 0;
 		
-		int luaChon;
-		cout << "Nhap lua chon cua ban: "; luaChon = nhapSoNguyen(); 
+menuChinh:
+		int thaotac = MenuDong(MENU, 4);
 		
-		switch(luaChon) {
+		switch(thaotac) 
+		{
 			case 1: {
-				cout << " THEM VAT TU " << endl;
-				nhapVatTu(DSVT);
-				ghiFileDSVT(DSVT);
+menuVatTu:
+				int thaotac = MenuDong(MENU_VAT_TU, 5);		
+				if(thaotac == 1) {
+					xoaTenDeTai();
+					nhapVatTu(DSVT);
+					ghiFileDSVT(DSVT);
+					goto menuVatTu;
+				}
+				if(thaotac == 2) {
+					xoaTenDeTai();
+					VatTu *vt[100];
+					int nVT = 0;
+					chuyenCaySangMang(DSVT.TREE_VT, vt, nVT);
+					xuatDanhSachVT(vt, nVT);
+					giaiPhongDSVatTu(vt, nVT);
+					goto menuVatTu;
+				}
+				if(thaotac == 3) {
+					xoaTenDeTai();
+					xoaVatTu(DSNV, DSVT);
+					ghiFileDSVT(DSVT);
+					goto menuVatTu;
+				}
+				if(thaotac == 4) {
+					xoaTenDeTai();
+					hieuChinhVatTu(DSVT);
+					ghiFileDSVT(DSVT);
+					goto menuVatTu;
+				}
+				if(thaotac == 5) {
+					xoaTenDeTai();
+					thongKeDoanhThu(DSNV, DSVT, DSDT);
+					goto menuVatTu;
+				}
 				break;
-			}
+			}	
 			case 2: {
-				xoaVatTu(DSNV, DSVT);
-				ghiFileDSVT(DSVT);
+menuNhanVien:	
+				int thaotac = MenuDong(MENU_NHAN_VIEN, 4);	
+				if(thaotac == 1) {
+					xoaTenDeTai();
+					nhapNhanVien(DSNV);
+					ghiFileDSNV(DSNV);
+					goto menuNhanVien;
+				}
+				if(thaotac == 2) {
+					xoaTenDeTai();
+					xuatDSNV(DSNV);
+					goto menuNhanVien;
+				}
+				if(thaotac == 3) {
+					xoaTenDeTai();
+					xoaNhanVien(DSNV);
+					goto menuNhanVien;
+				}
+				if(thaotac == 4) {
+					xoaTenDeTai();
+					cout << " HIEU CHINH NHAN VIEN " << endl;
+					hieuChinhNhanVien(DSNV);
+					ghiFileDSNV(DSNV);
+					goto menuNhanVien;
+				}
 				break;
 			}
 			case 3: {
-				hieuChinhVatTu(DSVT);
-				ghiFileDSVT(DSVT);
+menuHoaDon:
+				int thaotac = MenuDong(MENU_HOA_DON, 3);	
+				if(thaotac == 1) {
+					xoaTenDeTai();
+					lapHoaDon(DSNV, DSVT);
+					goto menuHoaDon;
+				}
+				if(thaotac == 2) {
+					xoaTenDeTai();
+					inHoaDon(DSNV, DSVT);
+					goto menuHoaDon;
+				}
+				if(thaotac == 3) {
+					xoaTenDeTai();
+					inHoaDonTrongKhoangTG(DSNV);
+					getch();
+					goto menuHoaDon;
+				}
 				break;
 			}
-			case 4: {
-				VatTu *vt[100];
-				int nVT = 0;
-				chuyenCaySangMang(DSVT.TREE_VT, vt, nVT);
-				// sap xep tang dan theo ten
-				sapXepVT(vt, nVT);
-				xuatDanhSachVT(vt, nVT);
-				giaiPhongDSVatTu(vt, nVT);
-				getch();
-				break;
-			}
-			case 5: {
-				nhapNhanVien(DSNV);
-				ghiFileDSNV(DSNV);
-				break;
-			}
-			case 6: {
-				cout << " HIEU CHINH NHAN VIEN " << endl;
-				hieuChinhNhanVien(DSNV);
-				ghiFileDSNV(DSNV);
-				break;
-			}
-			case 7: {
-				cout << endl << " DANH SACH NHAN VIEN " << endl;
-				sapXepNhanVien(DSNV);
-				xuatDSNV(DSNV);
-				getch();
-				break;
-			}
-			case 9: {
-				cout << endl << " LAP HOA DON " << endl;
-				lapHoaDon(DSNV, DSVT);
-				break;
-			}
-			case 10: {
-				inHoaDon(DSNV, DSVT);
-				break;
-			}
-			case 11: {
-				inHoaDonTrongKhoangTG(DSNV);
-				getch();
-				break;
-			}
-			case 12: {
-				xoaNhanVien(DSNV);
-				break;
-			}
-			case 13: {
-				thongKeDoanhThu(DSNV, DSVT, DSDT);
-				break;
-			}
-			case 0: {
+			default: {
+				TextColor(7);
 				GIAI_PHONG_BO_NHO(DSVT, DSNV);
-				cout << "TAM BIET. BAN DA DUNG CHUONG TRINH!" << endl;
-				checkStop = false;
-				break;
+				return;
 			}
 		}
 	}
@@ -1979,5 +2200,9 @@ int main() {
 	srand(time(NULL));
 	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
 	Menu();
+//	for(int i = 0; i <= 256; i++) {
+//		TextColor(i);
+//		cout << "______i: " << i << endl;
+//	}
 	return 0;
 }
