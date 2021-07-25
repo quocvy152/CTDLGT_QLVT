@@ -925,6 +925,31 @@ void xoaKhungNhapXemTGHD(){
 	}
 }
 
+void khungNhapThemVT() {
+	for(int i = 70; i <= 140; i++) {
+		gotoxy(i, 11); cout << char(205);
+		gotoxy(i, 16); cout << char(205);
+	}
+	
+	for(int i = 11; i <= 16; i++) {
+		// ve duong doc ben trai va phai
+		gotoxy(70, i); cout << char(186);
+		gotoxy(140, i); cout << char(186);
+	} 
+	
+	gotoxy(140, 11); cout << char(187);
+	gotoxy(140, 16); cout << char(188);
+	
+	gotoxy(70, 11); cout << char(201);
+	gotoxy(70, 16); cout << char(200);
+}
+
+void xoaKhungThemVT(){
+	for(int i = 10; i <= 17; i++) {
+		gotoxy(69, i); cout << "                                                                                                                              ";
+	}
+}
+
 void khungNhapXoa() {
 	for(int i = 70; i <= 140; i++) {
 		gotoxy(i, 11); cout << char(205);
@@ -1427,4 +1452,31 @@ void XoaKhungXuatLTC_KTDK() {
 	for(int i = 9; i <= 34; i++) {
 		gotoxy(52, i); cout << "                                                                                                                              ";
 	} 
+}
+
+void khungXacNhan(){
+	TextColor(238);
+	for(int i = 105; i <= 155; i++) {
+		gotoxy(i, 35); cout << char(205);
+		gotoxy(i, 42); cout << char(205);
+	}
+	
+	for(int i = 35; i <= 42; i++) {
+		// ve duong doc ben trai va phai
+		gotoxy(105, i); cout << char(186);
+		gotoxy(155, i); cout << char(186);
+	} 
+	
+	gotoxy(155, 35); cout << char(187);
+	gotoxy(155, 42); cout << char(188);
+	
+	gotoxy(105, 35); cout << char(201);
+	gotoxy(105, 42); cout << char(200);
+	TextColor(7);
+}
+
+void xoaKhungXacNhan(){
+	for(int i = 34; i < 43; i++) {
+		gotoxy(104, i); cout << "                                                                                                  ";
+	}	
 }

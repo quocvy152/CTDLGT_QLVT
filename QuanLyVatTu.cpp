@@ -221,7 +221,7 @@ int nhapSoNguyen(string noiDungCu) {
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
-	// v�ng lap vo tan cho den khi bam ENTER
+	// vong lap vo tan cho den khi bam ENTER
 	while ((int)c != ENTER) {
 		if (int(c) == BACKSPACE) {
 			// neu do dai chuoi bang ko thi khong xoa tiep
@@ -253,9 +253,14 @@ laChuoiRong:
 }
 
 // ham nhap so luong ton
-float nhapSoPhay() {
+float nhapSoPhay(string noiDungCu) {
 	string str;
 	char c;
+	
+	if(noiDungCu != "") {
+		str = noiDungCu;
+		cout << str;
+	}
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
@@ -900,20 +905,43 @@ string taoMaVT(TREE TREE_VT) {
 
 void nhapVatTu(DSVatTu &DSVT){
 	nodeVatTu *p = KhoiTaoNodeVT();
-	cin.ignore();
 	p->info.maVT = taoMaVT(DSVT.TREE_VT);
-	cout << "Ma vat tu: " << p->info.maVT << endl;
-	cout << "Nhap ten vat tu: "; p->info.tenVT = nhapLieu(1, "");
-	cout << "Nhap don vi tinh: "; p->info.dvt = nhapLieu(1, "");
-	cout << "Nhap so luong ton: "; p->info.slTon = nhapSoPhay();
+	
+	gotoxy(71, 12); cout << "Ma vat tu        : ";
+	gotoxy(90, 12); cout  << p->info.maVT;
+	
+	gotoxy(71, 13); cout << "Nhap ten vat tu  : ";
+	gotoxy(71, 14); cout << "Nhap don vi tinh : "; 
+	gotoxy(71, 15); cout << "Nhap so luong ton: "; 
+	
+	string tenVTCu = "", dvtCu = "", slTTonCu ="";
+	
+	khungNhapThemVT();
+	gotoxy(90, 13); p->info.tenVT = nhapLieu(1, tenVTCu);
+	if(p->info.tenVT == "-1") {
+		THONG_BAO("BAN DA THOAT THEM VAT TU!", 90, 40, 79);
+		return;
+	} 
+	
+	gotoxy(90, 14); p->info.dvt = nhapLieu(1, dvtCu);
+	if(p->info.dvt == "-1") {
+		THONG_BAO("BAN DA THOAT THEM VAT TU!", 90, 40, 79);
+		return;
+	} 
+		
+	gotoxy(90, 15); p->info.slTon = nhapSoPhay(slTTonCu);
+	if(p->info.slTon == -1) {
+		THONG_BAO("BAN DA THOAT THEM VAT TU!", 90, 40, 79);
+		return;
+	} 
 	
 	ChuanHoaChu(p->info.tenVT);
 	ChuanHoaChu(p->info.dvt);
 	
 	themMotVatTu(DSVT.TREE_VT, p);
 	DSVT.sl++;
-	cout << "THEM THANH CONG!" << endl;
-	getch();
+	THONG_BAO("THEM VAT TU THANH CONG!", 90, 40, 167);
+	ghiFileDSVT(DSVT);
 }
 
 void xuatDanhSachVT(VatTu *vt[], int nVT){
@@ -1045,6 +1073,41 @@ NhapLai:
 	} 
 	else 
 	{
+		int key;
+		khungXacNhan();
+		gotoxy(108, 37); cout << "BAN CO CHAC CHAN MUON XOA VAT TU NAY KHONG?";
+		int chon = 0;
+		while(1) {
+			
+			if(chon == 0) {
+				TextColor(228);
+				gotoxy(115, 39); cout << " CO ";
+				TextColor(7);
+				gotoxy(140, 39); cout << " KHONG ";
+			} else {
+				gotoxy(115, 39); cout << " CO ";
+				TextColor(228);
+				gotoxy(140, 39); cout << " KHONG ";
+				TextColor(7);
+			}
+			
+			key = getKey();
+			if(key == RIGHT) {
+				chon = 1;
+			} else if(key == LEFT) {
+				chon = 0;
+			} if(key == ENTER) {
+				if(chon == 0) {
+					xoaKhungXacNhan();
+					break;
+				} else {
+					noiDungCu = maVT;
+					xoaKhungXacNhan();
+					goto NhapLai;
+				}
+			}
+		}
+		
 		if(TREE_VT->info.slTon != 0) 
 		{
 			THONG_BAO("VAT TU VAN CON SO LUONG TON!", 90, 40, 79);
@@ -1130,31 +1193,77 @@ void themMotNV(DSNhanVien &DSNV, NhanVien* nv) {
 }
 
 //------------------------- them nhan vien vao danh mang con tro ------------------------
-int nhapNhanVien(DSNhanVien &DSNV) {
-	cout << endl;
+void nhapNhanVien(DSNhanVien &DSNV) {
 	if(DSNV.sl == MAX_NHANVIEN) {
-		cout << "THEM NHAN VIEN THAT BAI! DANH SACH DAY!" << endl;
-		getch();
+		THONG_BAO("THEM NHAN VIEN THAT BAI! DANH SACH DAY!", 90, 40, 79);
 	} else {
-		cout << "  NHAP NHAN VIEN  " << endl;
-		
 		NhanVien* p = new NhanVien;
+		khungNhapThemVT();
 		p->maNV = taoMaNV(DSNV);
-		cout << "Ma nhan vien: " << p->maNV << endl;
-		cin.ignore();
-		cout << "Nhap ho nhan vien:  ";
-		p->ho = nhapLieu(2, "");
-		cout << "Nhap ten nhan vien:  ";
-		p->ten = nhapLieu(2, "");
-		cout << "Nhap gioi tinh nhan vien:  ";
-		p->phai = nhapLieu(2, "");
+		gotoxy(71, 12); cout << "Ma nhan vien            : "; cout << p->maNV;
+		
+		gotoxy(71, 13); cout << "Nhap ho nhan vien       : "; 
+		gotoxy(71, 14); cout << "Nhap ten nhan vien      : "; 
+		gotoxy(71, 15); cout << "Chon gioi tinh nhan vien: "; 
+		
+		gotoxy(97, 13); p->ho = nhapLieu(2, "");
+		if(p->ho == "-1") {
+			THONG_BAO("BAN DA THOAT THEM NHAN VIEN!", 90, 40, 79);
+			return;
+		} 
+		gotoxy(97, 14); p->ten = nhapLieu(2, "");
+		if(p->ten == "-1") {
+			THONG_BAO("BAN DA THOAT THEM NHAN VIEN!", 90, 40, 79);
+			return;
+		}
+		
+		int key, chon = 0;
+		bool huyNhap = false;
+		while(1) {
+			if(chon == 0) {
+				TextColor(228);
+				gotoxy(97, 15); cout << "NAM";
+				TextColor(7);
+				gotoxy(105, 15); cout << "NU";
+			} else if(chon == 1) {
+				gotoxy(97, 15); cout << "NAM";
+				TextColor(228);
+				gotoxy(105, 15); cout << "NU";
+				TextColor(7);
+			}
+			
+			key = getKey();
+			if(key == RIGHT) {
+				chon = 1;
+			} else if(key == LEFT) {
+				chon = 0;
+			} else if(key == ENTER) {
+				if(chon == 0) {
+					xoaKhungXacNhan();
+					p->phai = "NAM";
+					break;
+				} else {
+					xoaKhungXacNhan();
+					p->phai = "NU";
+					break;
+				}
+			} else if(key == ESC) {
+				huyNhap = true;
+				break;
+			}
+		}
+		
+		if(huyNhap) {
+			THONG_BAO("BAN DA THOAT THEM NHAN VIEN!", 90, 40, 79);
+			return;
+		}
 		
 		ChuanHoaChu(p->ho);
 		ChuanHoaChu(p->ten);
-		ChuanHoaChu(p->phai);
 		
 		themMotNV(DSNV, p);
-		cout << "  THEM THANH CONG  " << endl;
+		THONG_BAO("THEM NHAN VIEN THANH CONG!", 90, 40, 167);
+		ghiFileDSNV(DSNV);
 	}
 }
 
@@ -1325,6 +1434,41 @@ NhapLai:
 		goto NhapLai;
 	}
 	
+	int key;
+	khungXacNhan();
+	gotoxy(108, 37); cout << "BAN CO CHAC CHAN MUON XOA NHAN VIEN NAY KHONG?";
+	int chon = 0;
+	while(1) {
+		
+		if(chon == 0) {
+			TextColor(228);
+			gotoxy(115, 39); cout << " CO ";
+			TextColor(7);
+			gotoxy(140, 39); cout << " KHONG ";
+		} else {
+			gotoxy(115, 39); cout << " CO ";
+			TextColor(228);
+			gotoxy(140, 39); cout << " KHONG ";
+			TextColor(7);
+		}
+		
+		key = getKey();
+		if(key == RIGHT) {
+			chon = 1;
+		} else if(key == LEFT) {
+			chon = 0;
+		} if(key == ENTER) {
+			if(chon == 0) {
+				xoaKhungXacNhan();
+				break;
+			} else {
+				noiDungCu = maNV;
+				xoaKhungXacNhan();
+				goto NhapLai;
+			}
+		}
+	}
+	
 	if(DSNV.nv[vtNV]->DSHD.FirstHD != NULL)
 	{
 		THONG_BAO("KHONG THE XOA! NHAN VIEN DA LAP HOA DON!", 90, 40, 79);
@@ -1334,7 +1478,7 @@ NhapLai:
 	int trangThaiXoa = xoaMotNhanVien(DSNV, vtNV);
 	if(trangThaiXoa == 1)
 	{
-		THONG_BAO("XOA NHAN VIEN THANH CONG!", 90, 40, 79);
+		THONG_BAO("XOA NHAN VIEN THANH CONG!", 90, 40, 167);
 		ghiFileDSNV(DSNV);
 		return;
 	}
@@ -1528,11 +1672,11 @@ NhapCTHDNhap:
 				goto NhapCTHDNhap;
 			} else {
 				cout << "Nhap so luong: ";
-				CTHD.soLuong = nhapSoPhay(); cout << endl;
+				CTHD.soLuong = nhapSoPhay(""); cout << endl;
 				cout << "Nhap don gia: ";
 				CTHD.donGia = nhapSoNguyen(""); cout << endl;
 				cout << "Nhap VAT: ";
-				CTHD.VAT = nhapSoPhay(); cout << endl;
+				CTHD.VAT = nhapSoPhay(""); cout << endl;
 				
 				int trangThaiThem = themMotCTHD(p->info.dsChiTietHoaDon, CTHD);
 				
@@ -1598,11 +1742,11 @@ NhapCTHDXuat:
 			else 
 			{
 				cout << "Nhap so luong: ";
-				CTHD.soLuong = nhapSoPhay(); cout << endl;
+				CTHD.soLuong = nhapSoPhay(""); cout << endl;
 				cout << "Nhap don gia: ";
 				CTHD.donGia = nhapSoNguyen(""); cout << endl;
 				cout << "Nhap VAT: ";
-				CTHD.VAT = nhapSoPhay(); cout << endl;
+				CTHD.VAT = nhapSoPhay(""); cout << endl;
 				
 				int trangThaiThem = themMotCTHD(p->info.dsChiTietHoaDon, CTHD);
 				
@@ -2233,7 +2377,7 @@ menuVatTu:
 				int thaotac = MenuDong(MENU_VAT_TU, 5);		
 				if(thaotac == 1) {
 					nhapVatTu(DSVT);
-					ghiFileDSVT(DSVT);
+					xoaKhungThemVT();
 					goto menuVatTu;
 				}
 				if(thaotac == 2) {
@@ -2265,7 +2409,7 @@ menuNhanVien:
 				int thaotac = MenuDong(MENU_NHAN_VIEN, 4);	
 				if(thaotac == 1) {
 					nhapNhanVien(DSNV);
-					ghiFileDSNV(DSNV);
+					xoaKhungThemVT();
 					goto menuNhanVien;
 				}
 				if(thaotac == 2) {
@@ -2278,7 +2422,6 @@ menuNhanVien:
 					goto menuNhanVien;
 				}
 				if(thaotac == 4) {
-					cout << " HIEU CHINH NHAN VIEN " << endl;
 					hieuChinhNhanVien(DSNV);
 					ghiFileDSNV(DSNV);
 					goto menuNhanVien;
