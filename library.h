@@ -950,6 +950,31 @@ void xoaKhungThemVT(){
 	}
 }
 
+void khungCapNhatNV() {
+	for(int i = 70; i <= 140; i++) {
+		gotoxy(i, 20); cout << char(205);
+		gotoxy(i, 25); cout << char(205);
+	}
+	
+	for(int i = 20; i <= 25; i++) {
+		// ve duong doc ben trai va phai
+		gotoxy(70, i); cout << char(186);
+		gotoxy(140, i); cout << char(186);
+	} 
+	
+	gotoxy(140, 20); cout << char(187);
+	gotoxy(140, 25); cout << char(188);
+	
+	gotoxy(70, 20); cout << char(201);
+	gotoxy(70, 25); cout << char(200);
+}
+
+void xoaKhungCapNhatNV(){
+	for(int i = 19; i <= 26; i++) {
+		gotoxy(69, i); cout << "                                                                                                                              ";
+	}
+}
+
 void khungNhapXoa() {
 	for(int i = 70; i <= 140; i++) {
 		gotoxy(i, 11); cout << char(205);
