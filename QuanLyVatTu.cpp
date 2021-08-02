@@ -356,11 +356,11 @@ int ngayNamTrongKhoang(Date ngayBatDau, Date ngayKetThuc, Date ngayKiemTra) {
 	// neu nam kiem tra bang nam bat dau thi kiem tra toi thang va ngay
 	if(ngayKiemTra.nam == ngayBatDau.nam) 
 	{
-		if(ngayKiemTra.thang < ngayBatDau.thang)
-			return 0;
-			
-		if(ngayKiemTra.thang == ngayBatDau.thang && ngayKiemTra.ngay < ngayBatDau.ngay)
-			return 0;
+	if(ngayKiemTra.thang < ngayBatDau.thang)
+		return 0;
+		
+	if(ngayKiemTra.thang == ngayBatDau.thang && ngayKiemTra.ngay < ngayBatDau.ngay)
+		return 0;
 	}
 	
 	// neu nam kiem tra bang nam ket thuc thi kiem tra toi ngay va thang
@@ -483,7 +483,7 @@ struct VatTu {
 	string maVT;
 	string tenVT;
 	string dvt;
-	bool trangThaiLap = false;
+	int tonTaiTrongHD = 0;
 	float slTon;
 };
 struct nodeVatTu {
@@ -784,7 +784,7 @@ void ghiFileNLR(ofstream &outFile, TREE TREE_VT, int nVT, int &nVTChay) {
 		outFile << TREE_VT->info.maVT << ",";
 		outFile << TREE_VT->info.tenVT << ",";
 		outFile << TREE_VT->info.slTon << ",";
-		outFile << TREE_VT->info.trangThaiLap << ",";
+		outFile << TREE_VT->info.tonTaiTrongHD << ",";
 		
 		// dang ghi toi cuoi file, loai bo ghi xuong dong
 		if(nVTChay == nVT)
@@ -1084,7 +1084,7 @@ NhapLai:
 			goto NhapLai;
 		}
 			
-		if(TREE_VT->info.trangThaiLap == true)
+		if(TREE_VT->info.tonTaiTrongHD > 0)
 		{
 			THONG_BAO("VAT TU DA LAP CHI TIET HOA DON! KHONG THE XOA VAT TU!", 90, 40, 79);
 			noiDungCu = maVT;
@@ -1098,27 +1098,6 @@ NhapLai:
 		return;
 	}
 }
-
-//void hieuChinhMotVatTu(TREE &TREE_VT, string maVT) {
-//	if(TREE_VT != NULL) {
-//		if(maVT.compare(TREE_VT->info.maVT) == 0) {
-//			
-//			cin.ignore();
-//			cout << "Nhap ten vat tu hieu chinh: ";
-//			TREE_VT->info.tenVT = nhapLieu(1, "");
-//			cout << "Nhap don vi tinh vat tu hieu chinh: ";
-//			TREE_VT->info.dvt = nhapLieu(1, "");;
-//			
-//			ChuanHoaChu(TREE_VT->info.tenVT);
-//			ChuanHoaChu(TREE_VT->info.dvt);
-//			
-//		} else if(maVT.compare(TREE_VT->info.maVT) > 0) {
-//			hieuChinhMotVatTu(TREE_VT->pRight, maVT);
-//		} else if(maVT.compare(TREE_VT->info.maVT) < 0) {
-//			hieuChinhMotVatTu(TREE_VT->pLeft, maVT);
-//		}
-//	}
-//}
 
 void hieuChinhVatTu(DSVatTu &DSVT) {
 	string noiDungCu;
@@ -1208,7 +1187,7 @@ NhapLai:
 		}
 		
 		if(huyNhap) {
-			THONG_BAO(" BAN DA THOAT CAP NHAT NHAN VIEN! ", 90, 40, 79);
+			THONG_BAO(" BAN DA THOAT CAP NHAT VAT TU! ", 90, 40, 79);
 			return;
 		}
 		
@@ -1806,7 +1785,28 @@ void luuHoaDon(DSNhanVien &DSNV) {
 	return;
 }
 
-bool xacNhanThoatLapHD(DSNhanVien &DSNV, PTRHD p, int vtNVLap) {
+// =================== ham cap nhat lai so luong ton cua vat tu neu nguoi do huy khong luu hoa don ===================
+void capNhatSLTon(DSVatTu &DSVT, DSChiTietHoaDon &DSCTHD, string loai){
+	for(int i = 0; i < DSCTHD.sl;  i++) {
+		TREE tree = timNodeVT(DSVT.TREE_VT, DSCTHD.ds[i].maVT);
+		// neu hoa don xuat thi khi cap nhat lai phai cong vao so vat tu da xuat ra
+		if(tree && loai.compare("X") == 0) 
+		{ 
+			tree->info.slTon += DSCTHD.ds[i].soLuong;
+			tree->info.tonTaiTrongHD -= 1;
+		}
+		// neu hoa don nhap thi khi cap nhat lai phai tru di so vat tu da nhap
+		else if(tree && loai.compare("N") == 0) 
+		{ 
+			tree->info.slTon -= DSCTHD.ds[i].soLuong;
+			tree->info.tonTaiTrongHD -= 1;
+		}
+	}
+	
+	ghiFileDSVT(DSVT);
+}
+
+bool xacNhanThoatLapHD(DSNhanVien &DSNV, DSVatTu &DSVT, PTRHD p, int vtNVLap, DSChiTietHoaDon &DSCTHDTam, string loai) {
 	gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
 				
 	int xacNhan = thongBaoXacNhan();
@@ -1817,9 +1817,11 @@ bool xacNhanThoatLapHD(DSNhanVien &DSNV, PTRHD p, int vtNVLap) {
 			xacNhan = thongBaoXacNhan();
 			if(xacNhan) {
 				themMotHD(DSNV.nv[vtNVLap]->DSHD.FirstHD, p); ++DSNV.nv[vtNVLap]->DSHD.sl;
+				ghiFileDSVT(DSVT);
 				luuHoaDon(DSNV);
 				return true;
 			} else {
+				capNhatSLTon(DSVT, DSCTHDTam, loai);
 				THONG_BAO(" BAN DA HUY HOA DON. GHI FILE KHONG THANH CONG! ", 90, 40, 79);
 				return true;
 			}
@@ -1919,9 +1921,6 @@ NhapLaiNgay:
 			goto NhapLaiNgay;
 		}
 		
-		//--------- them hd vao ds hoa don --------
-		//themMotHD(DSNV.nv[vtNVLap]->DSHD.FirstHD, p); ++DSNV.nv[vtNVLap]->DSHD.sl;
-		
 		THONG_BAO("TAO HOA DON THANH CONG! BAM PHIM BAT KI DE TIEP TUC NHAP CHI TIET HOA DON", 60, 40, 167);
 		
 		gotoxy(63, 13); cout << "Nhan phim bat ki de tiep tuc: "; 
@@ -1938,7 +1937,7 @@ NhapLaiNgay:
 		//----- lap chi tiet hoa don --------------
 		// hoa don nhap
 		if(p->info.loai == "N") {
-			
+			DSChiTietHoaDon DSCTHDTam;
 			noiDungCu = "";
 			ChiTietHoaDon CTHD;
 			khungNhapCTHD();
@@ -1960,7 +1959,7 @@ NhapCTHDNhap:
 			
 			gotoxy(79, 21); CTHD.maVT = nhapLieu(3, noiDungCu);
 			if(CTHD.maVT == "-1") {
-				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 				if(!kiemTraThoat)
 					goto NhapCTHDNhap;
 				else {
@@ -1978,7 +1977,7 @@ NhapCTHDNhap:
 			} else {
 				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay("");
 				if(CTHD.soLuong == -1) {
-					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 					if(!kiemTraThoat)
 						goto NhapCTHDNhap;
 					else {
@@ -1989,7 +1988,7 @@ NhapCTHDNhap:
 				
 				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
 				if(CTHD.donGia == -1) {
-					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 					if(!kiemTraThoat)
 						goto NhapCTHDNhap;
 					else {
@@ -2001,7 +2000,6 @@ NhapCTHDNhap:
 				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
 				if(CTHD.VAT == -1) {
 					gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
-					//gotoxy(115, 38); cout << "DU LIEU SE KHONG DUOC LUU";
 					
 					int xacNhan = thongBaoXacNhan();
 					if(xacNhan) return;	
@@ -2012,13 +2010,17 @@ NhapCTHDNhap:
 				
 				if(!trangThaiThem) {
 					THONG_BAO(" THEM CHI TIET HOA DON THAT BAI. HOA DON DAY ", 90, 40, 79);
+					THONG_BAO(" BAM ESC DE THOAT HOAC LUU HOA DON! ", 90, 40, 79);
+					goto NhapCTHDNhap;
 					return;
 				} else {					
 					// tinh toan cap nhat lai so luong ton
 					float slTonBanDau = tree->info.slTon;
 					float slNhapThem = CTHD.soLuong;
 					tree->info.slTon = slTonBanDau + slNhapThem;
-					tree->info.trangThaiLap = true;
+					tree->info.tonTaiTrongHD += 1;
+					
+					themMotCTHD(DSCTHDTam, CTHD);
 					
 					THONG_BAO(" THEM VAT TU VAO HOA DON THANH CONG! BAN CO MUON TIEP TUC NHAP? ", 65, 40, 167);
 					
@@ -2028,7 +2030,7 @@ NhapCTHDNhap:
 						goto NhapCTHDNhap;	
 					else 
 					{
-						bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+						bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 						if(!kiemTraThoat)
 							goto NhapCTHDNhap;
 						else {
@@ -2041,6 +2043,8 @@ NhapCTHDNhap:
 		} else { // hoa don xuat
 			noiDungCu = "";
 			ChiTietHoaDon CTHD;
+			DSChiTietHoaDon DSCTHDTam;
+			
 			khungNhapCTHD();
 			
 			gotoxy(63, 21); cout << "Nhap ma vat tu: ";
@@ -2059,7 +2063,7 @@ NhapCTHDXuat:
 	
 			gotoxy(79, 21); CTHD.maVT = nhapLieu(3, noiDungCu);
 			if(CTHD.maVT == "-1") {
-				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 				if(!kiemTraThoat)
 					goto NhapCTHDXuat;
 				else {
@@ -2073,13 +2077,14 @@ NhapCTHDXuat:
 			if(!tree) 
 			{
 				THONG_BAO(" MA VAT TU KHONG TON TAI! VUI LONG NHAP LAI ", 90, 40, 79);
+				noiDungCu = CTHD.maVT;
 				goto NhapCTHDXuat;
 			} 
 			else 
 			{
 				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay("");
 				if(CTHD.soLuong == -1) {
-					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 					if(!kiemTraThoat)
 						goto NhapCTHDXuat;
 					else {
@@ -2090,7 +2095,7 @@ NhapCTHDXuat:
 				
 				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
 				if(CTHD.donGia == -1) {
-					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 					if(!kiemTraThoat)
 						goto NhapCTHDXuat;
 					else {
@@ -2102,7 +2107,6 @@ NhapCTHDXuat:
 				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
 				if(CTHD.VAT == -1) {
 					gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
-					//gotoxy(115, 38); cout << "DU LIEU SE KHONG DUOC LUU";
 					
 					int xacNhan = thongBaoXacNhan();
 					if(xacNhan) return;	
@@ -2114,6 +2118,8 @@ NhapCTHDXuat:
 				if(!trangThaiThem) 
 				{
 					THONG_BAO(" THEM CHI TIET HOA DON THAT BAI. HOA DON DAY ", 90, 40, 79);
+					THONG_BAO(" BAM ESC DE THOAT HOAC LUU HOA DON! ", 90, 40, 79);
+					goto NhapCTHDXuat;
 					return;
 				} 
 				else 
@@ -2127,34 +2133,32 @@ NhapCTHDXuat:
 						THONG_BAO(" SO LUONG VAT TU TRONG KHO KHONG DU! ", 80, 40, 79);
 						
 						TextColor(224);
-						gotoxy(90, 39); cout << "                                                         ";
-						gotoxy(90, 40); cout << "                SO LUONG " << tree->info.tenVT << " HIEN CO: " << tree->info.slTon << "              ";
-						gotoxy(90, 41); cout << "                                                         ";
+						gotoxy(90, 40); cout << "                SO LUONG " << tree->info.tenVT << " HIEN CO: " << tree->info.slTon << "                  ";
 						TextColor(7);
 						Sleep(3000);
-						gotoxy(90, 39); cout << "                                                         ";
-						gotoxy(90, 40); cout << "                                                         ";
-						gotoxy(90, 41); cout << "                                                         ";
 						
 						// neu so luong vat tu xuat ko du thi xoa di cthd vua them vo chinh la cthd o cuoi cua hoa don do
 						xoaMotCTHD(p->info.dsChiTietHoaDon, p->info.dsChiTietHoaDon.sl - 1);
 						
+						noiDungCu = CTHD.maVT;
 						goto NhapCTHDXuat;
 					} 
 					else 
 					{
 						tree->info.slTon = slTonBanDau - slXuatRa;
-						tree->info.trangThaiLap = true;
+						tree->info.tonTaiTrongHD += 1;
+						themMotCTHD(DSCTHDTam, CTHD);
 						
 						THONG_BAO(" THEM VAT TU VAO HOA DON THANH CONG! BAN CO MUON TIEP TUC NHAP? ", 65, 40, 167);
-					
+						
 						gotoxy(112, 37); cout << "TIEP TUC NHAP CHI TIET HOA DON?";
 						int xacNhan = thongBaoXacNhan();
-						if(xacNhan) 
+						if(xacNhan) {
 							goto NhapCTHDXuat;	
+						}
 						else 
 						{
-							bool kiemTraThoat = xacNhanThoatLapHD(DSNV, p, vtNVLap);
+							bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 							if(!kiemTraThoat)
 								goto NhapCTHDXuat;
 							else {
@@ -2599,7 +2603,7 @@ void DocFileDSVT(DSVatTu &DSVT)
 		getline(inFile, vt->info.tenVT, ',');
 		inFile >> vt->info.slTon; 
 		inFile.ignore();
-		inFile >> vt->info.trangThaiLap; 
+		inFile >> vt->info.tonTaiTrongHD; 
 		inFile.ignore();
 		getline(inFile, vt->info.dvt, '\n');
 		
