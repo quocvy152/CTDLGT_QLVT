@@ -12,14 +12,15 @@
 #define MAX_THONG_KE_DOANH_THU 500
 
 // define num of keyboard
-#define UP 72
-#define DOWN 80
-#define RIGHT 77
-#define LEFT 75
+#define UP -72
+#define DOWN -80
+#define RIGHT -77
+#define LEFT -75
 #define ENTER 13
 #define ESC 27
 #define BACKSPACE 8
 #define SPACE 32
+#define DELETE -83
 
 using namespace std;
 
@@ -89,8 +90,8 @@ bool laKiTuInHoa(char c) {
 // ------------------------------------- bat phim -----------------------------------------------
 int getKey() {
 	int keyPress = getch();
-	if(keyPress == -32 || keyPress == 0) 
-		return getch();
+	if(keyPress == -32 || keyPress == 0 || keyPress == 224) 
+		return -getch();
 	else return keyPress;
 }
 
@@ -130,7 +131,8 @@ laChuoiRong:
 				// vi UP, DOWN, LEFT, RIGHT van la chu nen loai bo
 				c = getch();
 				continue;
-			}
+			} else if(-int(c) == DELETE)
+				return "-2";
 		}
 		
 		// chi nhan chu, khoang trang va so (nhap ten vat tu)
@@ -176,9 +178,8 @@ laChuoiRong:
 			c = getch();
 		}
 		
-		if(int(c) == ESC) {
+		if(int(c) == ESC)
 			return "-1";
-		}
 	}
 	if(str == "")
 	{
@@ -1951,6 +1952,7 @@ NhapLaiNgay:
 NhapCTHDNhap:
 			xoaKhungThongTinCTHD();
 			khungThongTinCTHD(p->info.dsChiTietHoaDon);
+			TREE tree;
 			
 			gotoxy(79, 21); cout << "                      ";
 			gotoxy(79, 22); cout << "                      ";
@@ -1966,9 +1968,11 @@ NhapCTHDNhap:
 					xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
 					return;	
 				}
+			} else if(CTHD.maVT == "-2") {
+				goto XoaCTHDNhap;
 			}
 			
-			TREE tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
+			tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
 			
 			if(!tree) {
 				THONG_BAO(" MA VAT TU KHONG TON TAI! VUI LONG NHAP LAI ", 90, 40, 79);
@@ -2040,6 +2044,19 @@ NhapCTHDNhap:
 					}
 				}
 			}
+// khi nguoi dung muon xoa chi tiet hoa don
+XoaCTHDNhap:
+	noiDungCu = "";
+		while(1) {
+			khungXoaCTHD();
+			gotoxy(86, 34); cout << "NHAP MA VAT TU BAN MUON XOA: ";
+			string maVTXoa;
+			gotoxy(84, 36); cout << "Ma Vat Tu: "; maVTXoa = nhapLieu(3, noiDungCu);
+			if(maVTXoa == "-1") {
+				xoaKhungXoaCTHD();
+				goto NhapCTHDNhap;
+			}
+		}
 		} else { // hoa don xuat
 			noiDungCu = "";
 			ChiTietHoaDon CTHD;
@@ -2168,6 +2185,9 @@ NhapCTHDXuat:
 						}
 					}
 				}
+XoaCTHDXuat:
+		int key = getKey();
+		cout << "Key: " << key << endl;
 			}
 		}
 	}
@@ -2817,7 +2837,6 @@ int main() {
 //		TextColor(i);
 //		cout << "______i: " << i << endl;
 //	}
-	
 	return 0;
 }
 

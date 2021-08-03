@@ -857,3 +857,26 @@ void xoaKhungThongTinCTHD(){
 		gotoxy(133, i); cout << "                                                                          ";
 	}
 }
+
+void khungXoaCTHD(){
+	TextColor(238);
+	for(int i = 80; i <= 120; i++){
+		gotoxy(i, 33); cout << "+";
+		gotoxy(i, 37); cout << "+";
+	}
+	for(int i = 33; i <= 37; i++){
+		gotoxy(80, i); cout << "+";
+		gotoxy(120, i); cout << "+";
+	}
+	TextColor(7);
+	TextColor(228);
+	gotoxy(81, 37); cout << "ESC: Thoat";
+	gotoxy(103, 37); cout << "ENTER: Xac Nhan";
+	TextColor(7);
+}
+
+void xoaKhungXoaCTHD(){
+	for(int i = 33; i <= 37; i++){
+		gotoxy(80, i); cout << "                                               ";
+	}
+}
