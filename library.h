@@ -430,7 +430,12 @@ void khungNhapCTHD() {
 	
 	gotoxy(63, 23);  cout << "Ngay          : "; 
 	gotoxy(63, 24);  cout << "Thang         : ";
-	gotoxy(63, 25);  cout << "Nam           : "; 
+	gotoxy(63, 25);  cout << "Nam           : ";
+	
+	TextColor(124);
+	gotoxy(60, 30);  cout << " ESC   : Thoat Lap Hoa Don ";
+	gotoxy(93, 30);  cout << " DELETE: Xoa Vat Tu Da Nhap ";
+	TextColor(7);
 }
 
 void xoaKhungNhapCTHD(){
@@ -521,16 +526,38 @@ void xoaKhungNhapXoa(){
 }
 
 void khungThongTinNV(string ho, string ten, string phai) {
-	TextColor(241);
-	gotoxy(60, 5);  cout << "                                      ";  
-	gotoxy(60, 6);  cout << "        THONG TIN NHAN VIEN           ";
-	gotoxy(60, 7); cout << "    Ho va Ten: " << ho << " " << ten << "         ";
-	gotoxy(60, 8); cout << "    Gioi tinh: " << phai << "                    ";
-	gotoxy(60, 9);  cout << "                                      ";
+	gotoxy(61, 5);  cout << "        THONG TIN NHAN VIEN           ";
+	gotoxy(62, 6); cout << "Ho va Ten: " << ho << " " << ten;
+	gotoxy(62, 7); cout << "Gioi tinh: " << phai;
+	
+	TextColor(255);
+	for(int i = 60; i <= 100; i++) {
+		gotoxy(i, 4); cout << "+";
+		gotoxy(i, 8); cout << "+";
+	}
+	for(int i = 4; i <= 8; i++) {
+		gotoxy(60, i); cout << "+";
+		gotoxy(100, i); cout << "+";
+	}
 	TextColor(7);
 }
 
-void khungXuatCTHD(float tongCong) {
+void khungThongTinHD() {
+	gotoxy(61, 10); cout << "        THONG TIN HOA DON           ";
+	
+	TextColor(255);
+	for(int i = 60; i <= 100; i++) {
+		gotoxy(i, 9); cout << "+";
+		gotoxy(i, 14); cout << "+";
+	}
+	for(int i = 10; i <= 14; i++) {
+		gotoxy(60, i); cout << "+";
+		gotoxy(100, i); cout << "+";
+	}
+	TextColor(7);
+}
+
+void khungXuatCTHD() {
 	TextColor(241);
 	gotoxy(110, 12); cout << "                                     ";
 	gotoxy(110, 13); cout << "           CHI TIET HOA DON          ";
@@ -853,7 +880,7 @@ void xoaKhungXacNhan(){
 }
 
 void xoaKhungThongTinCTHD(){
-	for(int i = 5; i < 30; i++) {
+	for(int i = 5; i <= 32; i++) {
 		gotoxy(133, i); cout << "                                                                          ";
 	}
 }

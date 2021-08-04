@@ -127,7 +127,7 @@ laChuoiRong:
 		if(int(c) == -32 || int(c) == 0 || int(c) == 224) 
 		{
 			c = getch();
-			if(int(c) == UP || int(c) == DOWN || int(c) == RIGHT || int(c) == LEFT)  {
+			if(-int(c) == UP || -int(c) == DOWN || -int(c) == RIGHT || int(c) == LEFT)  {
 				// vi UP, DOWN, LEFT, RIGHT van la chu nen loai bo
 				c = getch();
 				continue;
@@ -222,6 +222,10 @@ laChuoiRong:
 		// neu bang ESC return -1
 		if(int(c) == ESC) 
 			return -1;
+			
+		if(-int(c) == DELETE)
+			return -2;		
+	
 		c = getch();
 	}
 	if(str == "")
@@ -245,7 +249,7 @@ float nhapSoPhay(string noiDungCu) {
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
-	// v�ng lap vo tan cho den khi bam ENTER
+	// vong lap vo tan cho den khi bam ENTER
 	while ((int)c != ENTER) {
 		if (int(c) == BACKSPACE) {
 			// neu do dai chuoi bang ko thi khong xoa tiep
@@ -257,6 +261,7 @@ laChuoiRong:
 				cout << "\b \b"; 
 			}	
 		}
+		
 		// neu la so thi cout ra va day vo chuoi
 		if(laKiTuSo(c) || c == '.') {
 			cout << c;
@@ -264,6 +269,10 @@ laChuoiRong:
 		}
 		if(int(c) == ESC) 
 			return -1;
+			
+		if(-int(c) == DELETE)
+			return -2;
+				
 		c = getch();
 	}
 	if(str == "")
@@ -379,12 +388,18 @@ int ngayNamTrongKhoang(Date ngayBatDau, Date ngayKetThuc, Date ngayKiemTra) {
 
 // =================== ham in khoang thoi gian ======================================
 void inKhoanThoiGian(Date ngayBatDau, Date ngayKetThuc) {
-	TextColor(241);
-	gotoxy(60, 5);  cout << "                          ";
-	gotoxy(60, 6); cout << " Tu Ngay : " << ngayBatDau.ngay << "/" << ngayBatDau.thang << "/" << ngayBatDau.nam << "      ";
-	gotoxy(60, 7); cout << " Den Ngay: " << ngayKetThuc.ngay << "/" << ngayKetThuc.thang << "/" << ngayKetThuc.nam << "      ";
-	gotoxy(60, 8);  cout << "                          ";
+	TextColor(255);
+	for(int i = 60; i <= 100; i++) {
+		gotoxy(i, 5); cout << "+";
+		gotoxy(i, 8); cout << "+";
+	}
+	for(int i = 5; i <= 8; i++) {
+		gotoxy(60, i); cout << "+";
+		gotoxy(100, i); cout << "+";
+	}
 	TextColor(7);
+	gotoxy(62, 6); cout << " Tu Ngay : " << ngayBatDau.ngay << "/" << ngayBatDau.thang << "/" << ngayBatDau.nam;
+	gotoxy(62, 7); cout << " Den Ngay: " << ngayKetThuc.ngay << "/" << ngayKetThuc.thang << "/" << ngayKetThuc.nam;
 }
 
 // ============================ ham nhac nho xac nhan truoc khi lam gi do =====================================
@@ -1726,10 +1741,10 @@ void khungThongTinCTHD(DSChiTietHoaDon DSCTHD){
 	for(int i = 133; i <= 205; i++) {
 		gotoxy(i, 9); cout << char(205);
 		gotoxy(i, 11); cout << char(205);
-		gotoxy(i, 27); cout << char(205);
+		gotoxy(i, 32); cout << char(205);
 	}
 	
-	for(int i = 10; i <= 26; i++) {
+	for(int i = 10; i <= 31; i++) {
 		 
 		// ve duong doc ben trai va phai
 		gotoxy(133, i); cout << char(186);
@@ -1745,21 +1760,21 @@ void khungThongTinCTHD(DSChiTietHoaDon DSCTHD){
 	// ve cac goc vuong
 	gotoxy(205, 9); cout << char(187);
 	gotoxy(205, 11); cout << char(185);
-	gotoxy(205, 27); cout << char(188);
+	gotoxy(205, 32); cout << char(188);
 	
 	gotoxy(133, 9); cout << char(201);
 	gotoxy(133, 11); cout << char(204);
-	gotoxy(133, 27); cout << char(200);
+	gotoxy(133, 32); cout << char(200);
 	
 	gotoxy(140, 9); cout << char(203);
 	gotoxy(164, 9); cout << char(203);
 	gotoxy(181, 9); cout << char(203);
 	gotoxy(193, 9); cout << char(203);
 	
-	gotoxy(140, 27); cout << char(202);
-	gotoxy(164, 27); cout << char(202);
-	gotoxy(181, 27); cout << char(202);
-	gotoxy(193, 27); cout << char(202);
+	gotoxy(140, 32); cout << char(202);
+	gotoxy(164, 32); cout << char(202);
+	gotoxy(181, 32); cout << char(202);
+	gotoxy(193, 32); cout << char(202);
 	
 	gotoxy(135, 10); cout << "STT";
 	gotoxy(147, 10); cout << "MA VAT TU";
@@ -1768,7 +1783,7 @@ void khungThongTinCTHD(DSChiTietHoaDon DSCTHD){
 	gotoxy(197, 10); cout << "VAT";
 	
 	int stt = 0, hang = 0;
-	for(int i = 0; i < 15 && i < DSCTHD.sl; i++) {
+	for(int i = 0; i < DSCTHD.sl; i++) {
 		stt += 1;
 		gotoxy(137, 12 + hang); cout << stt; 
 		gotoxy(145, 12 + hang); cout << DSCTHD.ds[i].maVT;
@@ -1787,7 +1802,7 @@ void luuHoaDon(DSNhanVien &DSNV) {
 }
 
 // =================== ham cap nhat lai so luong ton cua vat tu neu nguoi do huy khong luu hoa don ===================
-void capNhatSLTon(DSVatTu &DSVT, DSChiTietHoaDon &DSCTHD, string loai){
+void capNhatDSSLTon(DSVatTu &DSVT, DSChiTietHoaDon &DSCTHD, string loai){
 	for(int i = 0; i < DSCTHD.sl;  i++) {
 		TREE tree = timNodeVT(DSVT.TREE_VT, DSCTHD.ds[i].maVT);
 		// neu hoa don xuat thi khi cap nhat lai phai cong vao so vat tu da xuat ra
@@ -1807,6 +1822,23 @@ void capNhatSLTon(DSVatTu &DSVT, DSChiTietHoaDon &DSCTHD, string loai){
 	ghiFileDSVT(DSVT);
 }
 
+// ============================= cap nhat so luong ton cua mot vat tu =============================================
+void capNhatMotSLTon(DSVatTu &DSVT, ChiTietHoaDon CTHD, string loai){
+	TREE tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
+	// neu hoa don xuat thi khi cap nhat lai phai cong vao so vat tu da xuat ra
+	if(tree && loai.compare("X") == 0) 
+	{ 
+		tree->info.slTon += CTHD.soLuong;
+		tree->info.tonTaiTrongHD -= 1;
+	}
+	// neu hoa don nhap thi khi cap nhat lai phai tru di so vat tu da nhap
+	else if(tree && loai.compare("N") == 0) 
+	{ 
+		tree->info.slTon -= CTHD.soLuong;
+		tree->info.tonTaiTrongHD -= 1;
+	}
+}
+
 bool xacNhanThoatLapHD(DSNhanVien &DSNV, DSVatTu &DSVT, PTRHD p, int vtNVLap, DSChiTietHoaDon &DSCTHDTam, string loai) {
 	gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
 				
@@ -1822,7 +1854,7 @@ bool xacNhanThoatLapHD(DSNhanVien &DSNV, DSVatTu &DSVT, PTRHD p, int vtNVLap, DS
 				luuHoaDon(DSNV);
 				return true;
 			} else {
-				capNhatSLTon(DSVT, DSCTHDTam, loai);
+				capNhatDSSLTon(DSVT, DSCTHDTam, loai);
 				THONG_BAO(" BAN DA HUY HOA DON. GHI FILE KHONG THANH CONG! ", 90, 40, 79);
 				return true;
 			}
@@ -1960,15 +1992,17 @@ NhapCTHDNhap:
 			gotoxy(79, 24); cout << "                      ";
 			
 			gotoxy(79, 21); CTHD.maVT = nhapLieu(3, noiDungCu);
-			if(CTHD.maVT == "-1") {
+			if(CTHD.maVT == "-1") { // khi nguoi dung nhan ESC
 				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 				if(!kiemTraThoat)
 					goto NhapCTHDNhap;
 				else {
 					xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+					gotoxy(60, 30);  cout << "                              ";
+					gotoxy(93, 30);  cout << "                              ";
 					return;	
 				}
-			} else if(CTHD.maVT == "-2") {
+			} else if(CTHD.maVT == "-2") { // khi nguoi dung nha DELETE
 				goto XoaCTHDNhap;
 			}
 			
@@ -1986,8 +2020,12 @@ NhapCTHDNhap:
 						goto NhapCTHDNhap;
 					else {
 						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
 						return;	
 					}
+				} else if(CTHD.soLuong == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDNhap;
 				}
 				
 				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
@@ -1997,17 +2035,27 @@ NhapCTHDNhap:
 						goto NhapCTHDNhap;
 					else {
 						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
 						return;	
 					}
+				} else if(CTHD.donGia == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDNhap;
 				}
 				
 				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
 				if(CTHD.VAT == -1) {
-					gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
-					
-					int xacNhan = thongBaoXacNhan();
-					if(xacNhan) return;	
-					else goto NhapCTHDNhap;
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
+					if(!kiemTraThoat)
+						goto NhapCTHDNhap;
+					else {
+						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
+						return;	
+					}
+				} else if(CTHD.VAT == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDNhap;
 				}
 				
 				int trangThaiThem = themMotCTHD(p->info.dsChiTietHoaDon, CTHD);
@@ -2039,6 +2087,8 @@ NhapCTHDNhap:
 							goto NhapCTHDNhap;
 						else {
 							xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+							gotoxy(60, 30);  cout << "                              ";
+							gotoxy(93, 30);  cout << "                              ";
 							return;	
 						}
 					}
@@ -2046,8 +2096,7 @@ NhapCTHDNhap:
 			}
 // khi nguoi dung muon xoa chi tiet hoa don
 XoaCTHDNhap:
-	noiDungCu = "";
-		while(1) {
+			noiDungCu = "";
 			khungXoaCTHD();
 			gotoxy(86, 34); cout << "NHAP MA VAT TU BAN MUON XOA: ";
 			string maVTXoa;
@@ -2056,12 +2105,24 @@ XoaCTHDNhap:
 				xoaKhungXoaCTHD();
 				goto NhapCTHDNhap;
 			}
-		}
+			
+			int viTriCTHD = timCTHD(p->info.dsChiTietHoaDon, maVTXoa);
+			if(viTriCTHD < 0) {
+				THONG_BAO("MA VAT TU BAN VUA NHAP KHONG CO TRONG HOA DON!", 90, 40, 79);
+				noiDungCu = maVTXoa;
+				goto XoaCTHDNhap;
+			} else {
+				capNhatMotSLTon(DSVT, p->info.dsChiTietHoaDon.ds[viTriCTHD], p->info.loai);
+				xoaMotCTHD(p->info.dsChiTietHoaDon, viTriCTHD);
+				xoaMotCTHD(DSCTHDTam, viTriCTHD);
+				THONG_BAO("XOA CHI TIET HOA DON THANH CONG!", 90, 40, 167);
+				xoaKhungXoaCTHD();
+				goto XoaCTHDNhap;
+			}
 		} else { // hoa don xuat
+			DSChiTietHoaDon DSCTHDTam;
 			noiDungCu = "";
 			ChiTietHoaDon CTHD;
-			DSChiTietHoaDon DSCTHDTam;
-			
 			khungNhapCTHD();
 			
 			gotoxy(63, 21); cout << "Nhap ma vat tu: ";
@@ -2071,7 +2132,9 @@ XoaCTHDNhap:
 			gotoxy(63, 25); cout << "                      ";
 			
 NhapCTHDXuat:
+			xoaKhungThongTinCTHD();
 			khungThongTinCTHD(p->info.dsChiTietHoaDon);	
+			TREE tree;
 			
 			gotoxy(79, 21); cout << "                      ";
 			gotoxy(79, 22); cout << "                      ";
@@ -2079,17 +2142,21 @@ NhapCTHDXuat:
 			gotoxy(79, 24); cout << "                      ";
 	
 			gotoxy(79, 21); CTHD.maVT = nhapLieu(3, noiDungCu);
-			if(CTHD.maVT == "-1") {
+			if(CTHD.maVT == "-1") { // khi nguoi dung nhan ESC
 				bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
 				if(!kiemTraThoat)
 					goto NhapCTHDXuat;
 				else {
 					xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+					gotoxy(60, 30);  cout << "                              ";
+					gotoxy(93, 30);  cout << "                              ";
 					return;	
 				}
+			} else if(CTHD.maVT == "-2") { // khi nguoi dung nhan DELETE
+				goto XoaCTHDXuat;
 			}
 			
-			TREE tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
+			tree = timNodeVT(DSVT.TREE_VT, CTHD.maVT);
 			
 			if(!tree) 
 			{
@@ -2106,8 +2173,12 @@ NhapCTHDXuat:
 						goto NhapCTHDXuat;
 					else {
 						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
 						return;	
 					}
+				} else if(CTHD.soLuong == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDXuat;
 				}
 				
 				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
@@ -2117,17 +2188,27 @@ NhapCTHDXuat:
 						goto NhapCTHDXuat;
 					else {
 						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
 						return;	
 					}
+				} else if(CTHD.donGia == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDXuat;
 				}
 				
 				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
 				if(CTHD.VAT == -1) {
-					gotoxy(109, 37); cout << "BAN CO CHAC CHAN MUON THOAT LAP HOA DON KHONG?";
-					
-					int xacNhan = thongBaoXacNhan();
-					if(xacNhan) return;	
-					else goto NhapCTHDXuat;
+					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, DSCTHDTam, p->info.loai);
+					if(!kiemTraThoat)
+						goto NhapCTHDXuat;
+					else {
+						xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+						gotoxy(60, 30);  cout << "                              ";
+						gotoxy(93, 30);  cout << "                              ";
+						return;	
+					}
+				} else if(CTHD.VAT == -2) { // khi nguoi dung nha DELETE
+					goto XoaCTHDXuat;
 				}
 				
 				int trangThaiThem = themMotCTHD(p->info.dsChiTietHoaDon, CTHD);
@@ -2153,6 +2234,7 @@ NhapCTHDXuat:
 						gotoxy(90, 40); cout << "                SO LUONG " << tree->info.tenVT << " HIEN CO: " << tree->info.slTon << "                  ";
 						TextColor(7);
 						Sleep(3000);
+						gotoxy(90, 40); cout << "                                                                                                ";
 						
 						// neu so luong vat tu xuat ko du thi xoa di cthd vua them vo chinh la cthd o cuoi cua hoa don do
 						xoaMotCTHD(p->info.dsChiTietHoaDon, p->info.dsChiTietHoaDon.sl - 1);
@@ -2180,14 +2262,39 @@ NhapCTHDXuat:
 								goto NhapCTHDXuat;
 							else {
 								xoaKhungNhapHD(); xoaKhungNhapCTHD(); xoaKhungThongTinCTHD();
+								gotoxy(60, 30);  cout << "                              ";
+								gotoxy(93, 30);  cout << "                              ";
 								return;	
 							}
 						}
 					}
 				}
+			}
 XoaCTHDXuat:
-		int key = getKey();
-		cout << "Key: " << key << endl;
+			noiDungCu = "";
+			while(1) {
+				khungXoaCTHD();
+				gotoxy(86, 34); cout << "NHAP MA VAT TU BAN MUON XOA: ";
+				string maVTXoa;
+				gotoxy(84, 36); cout << "Ma Vat Tu: "; maVTXoa = nhapLieu(3, noiDungCu);
+				if(maVTXoa == "-1") {
+					xoaKhungXoaCTHD();
+					goto NhapCTHDXuat;
+				}
+				
+				int viTriCTHD = timCTHD(p->info.dsChiTietHoaDon, maVTXoa);
+				if(viTriCTHD < 0) {
+					THONG_BAO("MA VAT TU BAN VUA NHAP KHONG CO TRONG HOA DON!", 90, 40, 79);
+					noiDungCu = maVTXoa;
+					goto XoaCTHDXuat;
+				} else {
+					capNhatMotSLTon(DSVT, p->info.dsChiTietHoaDon.ds[viTriCTHD], p->info.loai);
+					xoaMotCTHD(p->info.dsChiTietHoaDon, viTriCTHD);
+					xoaMotCTHD(DSCTHDTam, viTriCTHD);
+					THONG_BAO("XOA CHI TIET HOA DON THANH CONG!", 90, 40, 167);
+					xoaKhungXoaCTHD();
+					goto NhapCTHDXuat;
+				}
 			}
 		}
 	}
@@ -2214,25 +2321,24 @@ void inDSHDMotNhanVien(DSNhanVien &DSNV, int vtNV) {
 			tongTrang = (DSNV.sl - 1) / 15 + 1;
 		}
 		
-		int hang = 0; int stt = 0;
 		// dua vao bien duyet de biet in ra tu phan tu nao
-		int bienDuyet = 0;
+		int hang = 0, stt = 0, bienDuyet = 0;
+		
 		// tao ra 2 gioi han duyet de biet in ra tu phan tu nao
 		int gioiHanDuyetPhai = trang * 15 + 15; int gioiHanDuyetTrai = trang * 15;
-		
 		xoaKhungDSHD(); khungXuatDSHD();
-	 	for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
-			if((bienDuyet >= gioiHanDuyetTrai && bienDuyet < gioiHanDuyetPhai) && bienDuyet < DSNV.sl) {
-				stt += 1;
+		for (PTRHD p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) {
+			if((bienDuyet >= gioiHanDuyetTrai && bienDuyet < gioiHanDuyetPhai) && bienDuyet < DSNV.nv[vtNV]->DSHD.sl) {
+				stt++;
 				gotoxy(81, 12 + hang); cout << stt;
-				gotoxy(91, 12 + hang); cout << p->info.soHD << endl;
-				gotoxy(113, 12 + hang); cout << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << endl;
-				gotoxy(157, 12 + hang); cout << tenLoaiHD(p->info.loai) << endl;
+				gotoxy(91, 12 + hang); cout << p->info.soHD;
+				gotoxy(113, 12 + hang); cout << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam;
+				gotoxy(157, 12 + hang); cout << tenLoaiHD(p->info.loai);
 				hang++;
-				bienDuyet += 1;
+				bienDuyet++;
 			} else {
-				bienDuyet += 1;
-				stt += 1;
+				bienDuyet++;
+				stt++;
 			}
 		}
 		
@@ -2264,13 +2370,10 @@ void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 	}
 	else
 	{
-		TextColor(241);
-		gotoxy(60, 10); cout << "       THONG TIN HOA DON              ";
-		gotoxy(60, 11); cout << "     So Hoa Don : " << p->info.soHD << "          ";
-		gotoxy(60, 12); cout << "     Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam << "           ";
-		gotoxy(60, 13); cout << "     Loai       : " << tenLoaiHD(p->info.loai) << "                ";
-		gotoxy(60, 14);  cout << "                                      ";
-		TextColor(7);
+		khungThongTinHD();
+		gotoxy(62, 11); cout << "So Hoa Don : " << p->info.soHD;
+		gotoxy(62, 12); cout << "Ngay Lap   : " << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam;
+		gotoxy(62, 13); cout << "Loai       : " << tenLoaiHD(p->info.loai);
 		
 		long long tongCong = tinhTriGiaHD(p->info.dsChiTietHoaDon);
 		long long thanhTien = 0;
@@ -2288,7 +2391,7 @@ void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 			
 			int hang = 0; int stt = 0;
 			 
-			xoaKhungXuatCTHD(); khungXuatCTHD(tongCong);
+			xoaKhungXuatCTHD(); khungXuatCTHD();
 			for(int i = trang * 15; i < 15 + trang * 15 && i < p->info.dsChiTietHoaDon.sl; i++)
 			{
 				stt = i + 1;
@@ -2307,6 +2410,10 @@ void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
 				gotoxy(189, 19 + hang); cout << thanhTien;
 				hang++;
 			}
+			
+			TextColor(175);
+			gotoxy(180, 35); cout << " TONG CONG: " << tongCong << " ";
+			TextColor(7);
 			
 			hienThiTrang(trang + 1, tongTrang, 175, 37);
 			key = getKey();
@@ -2440,7 +2547,6 @@ void inThongTinHoaDon(DSHoaDon &DSHD, DSNhanVien &DSNV, Date ngayBatDau, Date ng
 				gotoxy(67, 19 + hang); cout << p->info.soHD;
 				gotoxy(89, 19 + hang); cout << DSNV.nv[vtNV]->ho << " " << DSNV.nv[vtNV]->ten;
 				gotoxy(134, 19 + hang); cout << p->info.ngayLap.ngay << "/" << p->info.ngayLap.thang << "/" << p->info.ngayLap.nam;
-				cout << setprecision(12);
 				gotoxy(152, 19 + hang); cout << loaiHoaDon(p->info.loai);
 				gotoxy(173, 19 + hang); cout << tinhTriGiaHD(p->info.dsChiTietHoaDon);
 				bienDuyet++; hang++;
@@ -2450,7 +2556,6 @@ void inThongTinHoaDon(DSHoaDon &DSHD, DSNhanVien &DSNV, Date ngayBatDau, Date ng
 				bienDuyet++;
 				stt++;
 			}
-			
 		}
 		
 		hienThiTrang(trang + 1, tongTrang, 175, 37);
