@@ -332,7 +332,7 @@ void khungNhapXemHD() {
 
 void xoaKhungNhapXemHD() {
 	for(int i = 11; i <= 16; i++) {
-		gotoxy(70, i);  cout << "                                                                                                                 ";
+		gotoxy(70, i);  cout << "                                                                                                                                ";
 	} 
 }
 
@@ -367,7 +367,7 @@ void khungNhapXemTGHD() {
 
 void xoaKhungNhapXemTGHD(){
 	for(int i = 10; i <= 17; i++) {
-		gotoxy(70, i); cout << "                                                                                                                                 ";
+		gotoxy(70, i); cout << "                                                                                                                                      ";
 	}
 }
 
@@ -471,7 +471,7 @@ void khungNhapThemVT() {
 
 void xoaKhungThemVT(){
 	for(int i = 10; i <= 17; i++) {
-		gotoxy(69, i); cout << "                                                                                                                              ";
+		gotoxy(69, i); cout << "                                                                                                                                    ";
 	}
 }
 
@@ -521,7 +521,7 @@ void khungNhapXoa() {
 
 void xoaKhungNhapXoa(){
 	for(int i = 10; i < 17; i++) {
-		gotoxy(69, i); cout << "                                                                                                                     ";
+		gotoxy(69, i); cout << "                                                                                                                              ";
 	}
 }
 
@@ -722,7 +722,7 @@ void xoaKhungXuatHoaDon() {
 }
 
 void xoaTrangXuatCTHD(){
-	for(int i = 5; i <= 44; i++) {
+	for(int i = 3; i <= 44; i++) {
 		gotoxy(54, i); cout << "                                                                                                                                                         ";
 	}
 }
@@ -815,15 +815,15 @@ void xoaKhungDSVT() {
 }
 
 void xoaNhapNgayBatDau() {
-	gotoxy(80, 13); cout << "    ";
-	gotoxy(80, 14); cout << "    ";
-	gotoxy(80, 15); cout << "    ";
+	gotoxy(78, 8); cout << "       ";
+	gotoxy(78, 9); cout << "       ";
+	gotoxy(78, 10); cout << "       ";
 }
 
 void xoaNhapNgayHoaDon() {
-	gotoxy(86, 16); cout << "    ";
-	gotoxy(86, 17); cout << "    ";
-	gotoxy(86, 18); cout << "    ";
+	gotoxy(86, 16); cout << "       ";
+	gotoxy(86, 17); cout << "       ";
+	gotoxy(86, 18); cout << "       ";
 }
 
 void xoaNhapNgayKetThuc() {
@@ -847,7 +847,7 @@ void xoaKhungDSNV() {
 }
 
 void xoaKhungDSHD() {
-	for(int i = 4; i <= 29; i++) {
+	for(int i = 3; i <= 29; i++) {
 		gotoxy(78, i); cout << "                                                                                                                          ";
 	} 
 }
