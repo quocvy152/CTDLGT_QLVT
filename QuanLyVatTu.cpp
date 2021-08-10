@@ -196,7 +196,7 @@ laChuoiRong:
 		if(int(c) == ESC)
 			return "-1";
 	}
-	if(str == "")
+	if(str.compare("") == 0)
 	{
 		THONG_BAO("   KHONG DUOC BO TRONG!   ", 90, 40, 79);
 		goto laChuoiRong;
@@ -206,14 +206,9 @@ laChuoiRong:
 }
 
 // dung de nhap cac so nguyen
-int nhapSoNguyen(string noiDungCu) {
+int nhapSoNguyen() {
 	string str;
 	char c;
-	
-	if(noiDungCu.compare("") != 0) {
-		str = noiDungCu;
-		cout << str;
-	}
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
@@ -243,7 +238,7 @@ laChuoiRong:
 	
 		c = getch();
 	}
-	if(str == "")
+	if(str.compare("") == 0)
 	{
 		THONG_BAO("   KHONG DUOC BO TRONG!   ", 75, 43, 79);
 		goto laChuoiRong;
@@ -253,14 +248,9 @@ laChuoiRong:
 }
 
 // ham nhap so luong ton
-float nhapSoPhay(string noiDungCu) {
+float nhapSoPhay() {
 	string str;
 	char c;
-	
-	if(noiDungCu != "") {
-		str = noiDungCu;
-		cout << str;
-	}
 	
 laChuoiRong:
 	c = getch(); // nhap ki tu dau tien
@@ -290,7 +280,7 @@ laChuoiRong:
 				
 		c = getch();
 	}
-	if(str == "")
+	if(str.compare("") == 0)
 	{
 		THONG_BAO("   KHONG DUOC BO TRONG!   ", 90, 40, 79);
 		goto laChuoiRong;
@@ -754,9 +744,9 @@ void thongKeDoanhThu(DSNhanVien &DSNV, DSVatTu &DSVT, DSDoanhThu &DSDT) {
 	TextColor(7);	
 	
 NhapNgayBD:
-	gotoxy(80, 13); ngayBatDau.ngay = nhapSoNguyen(noiDungCu);  if(ngayBatDau.ngay == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
-	gotoxy(80, 14); ngayBatDau.thang = nhapSoNguyen(noiDungCu); if(ngayBatDau.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
-	gotoxy(80, 15); ngayBatDau.nam = nhapSoNguyen(noiDungCu);   if(ngayBatDau.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
+	gotoxy(80, 13); ngayBatDau.ngay = nhapSoNguyen();  if(ngayBatDau.ngay == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
+	gotoxy(80, 14); ngayBatDau.thang = nhapSoNguyen(); if(ngayBatDau.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
+	gotoxy(80, 15); ngayBatDau.nam = nhapSoNguyen();   if(ngayBatDau.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
 	bool trangThaiNBD = laNgayHopLe(ngayBatDau);
 	if(!trangThaiNBD)
 	{
@@ -766,9 +756,9 @@ NhapNgayBD:
 	}
 	
 NhapNgayKT:
-	gotoxy(112, 13); ngayKetThuc.ngay = nhapSoNguyen(noiDungCu);  if(ngayKetThuc.ngay == -1)  { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
-	gotoxy(112, 14); ngayKetThuc.thang = nhapSoNguyen(noiDungCu); if(ngayKetThuc.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THUN", 90, 40, 79); return; }
-	gotoxy(112, 15); ngayKetThuc.nam = nhapSoNguyen(noiDungCu);   if(ngayKetThuc.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
+	gotoxy(112, 13); ngayKetThuc.ngay = nhapSoNguyen();  if(ngayKetThuc.ngay == -1)  { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
+	gotoxy(112, 14); ngayKetThuc.thang = nhapSoNguyen(); if(ngayKetThuc.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THUN", 90, 40, 79); return; }
+	gotoxy(112, 15); ngayKetThuc.nam = nhapSoNguyen();   if(ngayKetThuc.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM TOP DOANH THU", 90, 40, 79); return; }
 	bool trangThaiNKT = laNgayHopLe(ngayKetThuc);
 	if(!trangThaiNKT)
 	{
@@ -998,7 +988,7 @@ void nhapVatTu(DSVatTu &DSVT){
 		return;
 	} 
 		
-	gotoxy(90, 15); p->info.slTon = nhapSoPhay("");
+	gotoxy(90, 15); p->info.slTon = nhapSoPhay();
 	if(p->info.slTon == -1) {
 		THONG_BAO("BAN DA THOAT THEM VAT TU!", 90, 40, 79);
 		return;
@@ -1661,7 +1651,6 @@ int xoaMotNhanVien(DSNhanVien &DSNV, int vtNV)
 	return 1; 
 }
 
-
 //---------------------------------- xoa nhan vien -------------------------------------
 void xoaNhanVien(DSNhanVien &DSNV) {
 	if(DSNV.sl == 0) 
@@ -1774,11 +1763,11 @@ bool ktTrungMaHD(DSNhanVien DSNV, string soHD) {
 }
 
 // luot qua hoa don cua mot nhan vien
-bool ktTrungMaHDTrongNV(PTRHD hoaDon, string soHD) {
+PTRHD ktTrungMaHDTrongNV(PTRHD hoaDon, string soHD) {
 	for(PTRHD p = hoaDon; p != NULL; p = p->pNext)
 		if (p->info.soHD == soHD)
-			return true;
-	return false;
+			return p;
+	return NULL;
 }
 
 string taoMaHD(DSNhanVien DSNV) {
@@ -1834,7 +1823,7 @@ string tenLoaiHD(string loai) {
 	else return "NHAP";
 }
 
-void khungThongTinCTHD(DSChiTietHoaDon DSCTHD){
+void khungThongTinCTHD(DSChiTietHoaDon DSCTHD, DSVatTu DSVT){
 	TextColor(241);
 	gotoxy(147, 5); cout << "                                              ";
 	gotoxy(147, 6); cout << "           DANH SACH CHI TIET VAT TU          ";
@@ -1881,16 +1870,18 @@ void khungThongTinCTHD(DSChiTietHoaDon DSCTHD){
 	gotoxy(193, 32); cout << char(202);
 	
 	gotoxy(135, 10); cout << "STT";
-	gotoxy(147, 10); cout << "MA VAT TU";
+	gotoxy(147, 10); cout << "TEN VAT TU";
 	gotoxy(169, 10); cout << "DON GIA";
 	gotoxy(183, 10); cout << "SO LUONG";
 	gotoxy(197, 10); cout << "VAT";
 	
 	int stt = 0, hang = 0;
 	for(int i = 0; i < DSCTHD.sl; i++) {
+		TREE vatTu = timNodeVT(DSVT.TREE_VT, DSCTHD.ds[i].maVT);
+		
 		stt += 1;
 		gotoxy(137, 12 + hang); cout << stt; 
-		gotoxy(145, 12 + hang); cout << DSCTHD.ds[i].maVT;
+		gotoxy(145, 12 + hang); cout << vatTu->info.tenVT;
 		gotoxy(167, 12 + hang); cout << DSCTHD.ds[i].donGia;
 		gotoxy(183, 12 + hang); cout << DSCTHD.ds[i].soLuong;
 		gotoxy(195, 12 + hang); cout << DSCTHD.ds[i].VAT;
@@ -2057,9 +2048,9 @@ NhapLai:
 		gotoxy(63, 7); cout << "Loai hoa don : " << tenLoaiHD(p->info.loai);
 			
 NhapLaiNgay:
-		gotoxy(78, 8); p->info.ngayLap.ngay = nhapSoNguyen("");  if(p->info.ngayLap.ngay == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-		gotoxy(78, 9); p->info.ngayLap.thang = nhapSoNguyen(""); if(p->info.ngayLap.thang == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-		gotoxy(78, 10); p->info.ngayLap.nam = nhapSoNguyen("");   if(p->info.ngayLap.nam == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+		gotoxy(78, 8); p->info.ngayLap.ngay = nhapSoNguyen();  if(p->info.ngayLap.ngay == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+		gotoxy(78, 9); p->info.ngayLap.thang = nhapSoNguyen(); if(p->info.ngayLap.thang == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+		gotoxy(78, 10); p->info.ngayLap.nam = nhapSoNguyen();   if(p->info.ngayLap.nam == -1) { xoaKhungNhapHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
 		
 		if(laNgayHopLe(p->info.ngayLap) == false)
 		{
@@ -2114,7 +2105,7 @@ NhapCTHDNhap:
 			gotoxy(63, 24); cout << "Nhap VAT      : ";
 			gotoxy(63, 25); cout << "                      ";
 			xoaKhungThongTinCTHD();
-			khungThongTinCTHD(p->info.dsChiTietHoaDon);
+			khungThongTinCTHD(p->info.dsChiTietHoaDon, DSVT);
 			
 			gotoxy(79, 21); cout << "                      ";
 			gotoxy(79, 22); cout << "                      ";
@@ -2145,7 +2136,7 @@ NhapCTHDNhap:
 				noiDungCu = CTHD.maVT;
 				goto NhapCTHDNhap;
 			} else {
-				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay("");
+				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay();
 				if(CTHD.soLuong == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2160,7 +2151,7 @@ NhapCTHDNhap:
 					goto XoaCTHDNhap;
 				}
 				
-				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
+				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen();
 				if(CTHD.donGia == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2175,7 +2166,7 @@ NhapCTHDNhap:
 					goto XoaCTHDNhap;
 				}
 						
-				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
+				gotoxy(79, 24); CTHD.VAT = nhapSoPhay();
 				if(CTHD.VAT == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2227,7 +2218,7 @@ NhapCTHDNhap:
 							}
 						}
 					}
-				} else { // ma CTHD da ton tai trong danh sach chi tiet hoa don
+				} else {
 					// tinh toan cap nhat lai so luong ton
 					float slTonBanDau = tree->info.slTon;
 					float slNhapThem = CTHD.soLuong;
@@ -2294,7 +2285,7 @@ NhapCTHDXuat:
 			gotoxy(63, 24); cout << "Nhap VAT      : ";
 			gotoxy(63, 25); cout << "                      ";
 			xoaKhungThongTinCTHD();
-			khungThongTinCTHD(p->info.dsChiTietHoaDon);	
+			khungThongTinCTHD(p->info.dsChiTietHoaDon, DSVT);	
 			
 			gotoxy(79, 21); cout << "                      ";
 			gotoxy(79, 22); cout << "                      ";
@@ -2328,7 +2319,7 @@ NhapCTHDXuat:
 			} 
 			else 
 			{
-				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay("");
+				gotoxy(79, 22); CTHD.soLuong = nhapSoPhay();
 				if(CTHD.soLuong == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2343,7 +2334,7 @@ NhapCTHDXuat:
 					goto XoaCTHDXuat;
 				}
 				
-				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen("");
+				gotoxy(79, 23); CTHD.donGia = nhapSoNguyen();
 				if(CTHD.donGia == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2358,7 +2349,7 @@ NhapCTHDXuat:
 					goto XoaCTHDXuat;
 				}
 
-				gotoxy(79, 24); CTHD.VAT = nhapSoPhay("");
+				gotoxy(79, 24); CTHD.VAT = nhapSoPhay();
 				if(CTHD.VAT == -1) {
 					bool kiemTraThoat = xacNhanThoatLapHD(DSNV, DSVT, p, vtNVLap, p->info.loai);
 					if(!kiemTraThoat)
@@ -2557,12 +2548,7 @@ void inDSHDMotNhanVien(DSNhanVien &DSNV, int vtNV) {
 	}
 }
 
-void inChiTietHD(DSNhanVien &DSNV, int vtNV, string soHD, DSVatTu DSVT) {
-	PTRHD p;
-	for(p = DSNV.nv[vtNV]->DSHD.FirstHD; p != NULL; p = p->pNext) 
-		if (p->info.soHD == soHD) 
-			break;
-	
+void inChiTietHD(PTRHD p, string soHD, DSVatTu DSVT) {
 	if(p->info.dsChiTietHoaDon.sl == 0)
 	{
 		TextColor(79);
@@ -2719,7 +2705,7 @@ NhapSoHD:
 			goto XuatDSHD;
 		}
 		
-		bool tonTaiSoHD = ktTrungMaHDTrongNV(DSNV.nv[vtNV]->DSHD.FirstHD, soHD);
+		PTRHD tonTaiSoHD = ktTrungMaHDTrongNV(DSNV.nv[vtNV]->DSHD.FirstHD, soHD);
 		if(!tonTaiSoHD) 
 		{
 			THONG_BAO("SO HOA DON KHONG TON TAI TRONG NHAN VIEN NAY!", 90, 40, 79);
@@ -2731,7 +2717,7 @@ NhapSoHD:
 			xoaKhungNhapXemHD();
 			khungThongTinNV(DSNV.nv[vtNV]->ho, DSNV.nv[vtNV]->ten, DSNV.nv[vtNV]->phai);
 			
-			inChiTietHD(DSNV, vtNV, soHD, DSVT);
+			inChiTietHD(tonTaiSoHD, soHD, DSVT);
 			return;
 		}
 	}
@@ -2828,9 +2814,9 @@ void inHoaDonTrongKhoangTG(DSNhanVien &DSNV) {
 	khungNhapXemTGHD();
 	
 NhapNgayBD:
-	gotoxy(80, 13); ngayBatDau.ngay = nhapSoNguyen(noiDungCu);  if(ngayBatDau.ngay == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-	gotoxy(80, 14); ngayBatDau.thang = nhapSoNguyen(noiDungCu); if(ngayBatDau.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-	gotoxy(80, 15); ngayBatDau.nam = nhapSoNguyen(noiDungCu);   if(ngayBatDau.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(80, 13); ngayBatDau.ngay = nhapSoNguyen();  if(ngayBatDau.ngay == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(80, 14); ngayBatDau.thang = nhapSoNguyen(); if(ngayBatDau.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(80, 15); ngayBatDau.nam = nhapSoNguyen();   if(ngayBatDau.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
 	bool trangThaiNBD = laNgayHopLe(ngayBatDau);
 	if(!trangThaiNBD)
 	{
@@ -2840,9 +2826,9 @@ NhapNgayBD:
 	}
 	
 NhapNgayKT:
-	gotoxy(112, 13); ngayKetThuc.ngay = nhapSoNguyen(noiDungCu);  if(ngayKetThuc.ngay == -1)  { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-	gotoxy(112, 14); ngayKetThuc.thang = nhapSoNguyen(noiDungCu); if(ngayKetThuc.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
-	gotoxy(112, 15); ngayKetThuc.nam = nhapSoNguyen(noiDungCu);   if(ngayKetThuc.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(112, 13); ngayKetThuc.ngay = nhapSoNguyen();  if(ngayKetThuc.ngay == -1)  { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(112, 14); ngayKetThuc.thang = nhapSoNguyen(); if(ngayKetThuc.thang == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
+	gotoxy(112, 15); ngayKetThuc.nam = nhapSoNguyen();   if(ngayKetThuc.nam == -1) { xoaKhungNhapXemTGHD(); THONG_BAO("BAN DA THOAT XEM HOA DON", 90, 40, 79); return; }
 	bool trangThaiNKT = laNgayHopLe(ngayKetThuc);
 	if(!trangThaiNKT)
 	{
